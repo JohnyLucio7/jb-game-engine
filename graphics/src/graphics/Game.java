@@ -13,6 +13,7 @@ import javax.swing.JFrame;
  * Classe principal onde são definidos todos os métodos e atributos que compõem o núcleo da game engine.
  * É responsável pela inicialização do Frame e da Thread, assim como, pela implementação dos loops de 
  * renderização e atualização e controle de FPS (Frames Por Segundo).
+ * 
  * @author Johny Lúcio: BTI/IMD - N - 20200039648 - UFRN.
  * */
 public class Game extends Canvas implements Runnable {
