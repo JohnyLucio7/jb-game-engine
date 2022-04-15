@@ -3,6 +3,7 @@ package graphics;
 import java.awt.Canvas;
 import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.image.BufferStrategy;
 import java.awt.image.BufferedImage;
@@ -22,9 +23,9 @@ public class Game extends Canvas implements Runnable {
 	public static JFrame frame;
 	private Thread thread;
 	private boolean isRunning = true;
-	private final int WIDTH = 160;
-	private final int HEIGHT = 120;
-	private final int SCALE = 4;
+	private final int WIDTH = 240;
+	private final int HEIGHT = 160;
+	private final int SCALE = 3;
 
 	private BufferedImage biImage;
 
@@ -99,8 +100,12 @@ public class Game extends Canvas implements Runnable {
 		g.fillRect(0, 0, WIDTH, HEIGHT);
 		
 		
-		g.setColor(Color.CYAN);
-		g.fillRect(20, 20, 80, 80);
+		g.setColor(Color.CYAN);	
+		g.fillRect(20, 20, 80, 80); // Exemplo de retangulo
+		
+		g.setFont(new Font("Arial", Font.BOLD, 16));
+		g.setColor(Color.WHITE);
+		g.drawString("Hello World", 19, 19);
 
 		// -- Seção de renderização escalonada | Fim
 		
@@ -111,6 +116,7 @@ public class Game extends Canvas implements Runnable {
 		 * maior. 
 		 * */
 		g.drawImage(biImage, 0, 0, WIDTH * SCALE, HEIGHT * SCALE, null); // DESENHO DA IMAGEM NO FRAME
+		
 		bs.show();
 	}
 
