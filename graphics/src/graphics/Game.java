@@ -11,8 +11,8 @@ import javax.swing.JFrame;
 
 /**
  * Classe principal onde são definidos todos os métodos e atributos que compõem o núcleo da game engine.
- * É responsável pela inicialização do Frame e da Thread, assim como, pela implementação dos loops de renderização
- * e atualização e controle de FPS (Frames Por Segundo).
+ * É responsável pela inicialização do Frame e da Thread, assim como, pela implementação dos loops de 
+ * renderização e atualização e controle de FPS (Frames Por Segundo).
  * @author Johny Lúcio: BTI/IMD - N - 20200039648 - UFRN.
  * */
 public class Game extends Canvas implements Runnable {
@@ -75,8 +75,7 @@ public class Game extends Canvas implements Runnable {
 
 		/*
 		 * BufferStrategy � uma sequ�ncia de buffers colocados em tela para otimizar a
-		 * renderiza��o
-		 * 
+		 * renderização.
 		 */
 		BufferStrategy bs = this.getBufferStrategy();
 
@@ -87,13 +86,13 @@ public class Game extends Canvas implements Runnable {
 
 		Graphics g = biImage.getGraphics();
 		/*
-		 * Tudo dentro desse bloco a partir da cria��o do objeto "g" est� escalonado de acordo com a constante SCALE
-		 * tendo em vista que ela so � desenhada no frame a partir da sentensa g.drawImage(...). Tudo est� sendo desenhando
-		 * na imagem e como ela esta sendo multiplicada por SCALE qualquer coisa que for desenhada nela ser� escalonada
+		 * Tudo dentro desse bloco a partir da criação do objeto "g" está escalonado de acordo com a constante SCALE
+		 * tendo em vista que ela só é desenhada no frame a partir da sentensa g.drawImage(...). Tudo está sendo desenhando
+		 * na imagem e como ela está sendo multiplicada por SCALE qualquer coisa que for desenhada nela será escalonada.
 		 * 
 		 * */
 		
-		// -- Se��o de renderiza��o escalonada | In�cio
+		// -- Seção de renderização escalonada | Início
 		
 		g.setColor(new Color(40, 40, 40)); // COR DO PLANO DE FUNDO (BG)
 		g.fillRect(0, 0, WIDTH, HEIGHT);
@@ -102,12 +101,12 @@ public class Game extends Canvas implements Runnable {
 		g.setColor(Color.CYAN);
 		g.fillRect(20, 20, 80, 80);
 
-		// -- Se��o de renderiza��o escalonada | Fim
+		// -- Seção de renderização escalonada | Fim
 		
 		g = bs.getDrawGraphics();
 		/*
-		 * O objeto da imagem foi criado com os valores de WIDTH e HEIGHT padr�es e a partir da sentan�a a baixo foi
-		 * desenhada sendo multiplicada pela constante SCALE. Assim tudo que for desenhado antes disso ser� SCALE vezes
+		 * O objeto da imagem foi criado com os valores de WIDTH e HEIGHT padrões e a partir da sentança a baixo foi
+		 * desenhada sendo multiplicada pela constante SCALE. Assim tudo que for desenhado antes disso será SCALE vezes
 		 * maior. 
 		 * */
 		g.drawImage(biImage, 0, 0, WIDTH * SCALE, HEIGHT * SCALE, null); // DESENHO DA IMAGEM NO FRAME
@@ -145,5 +144,4 @@ public class Game extends Canvas implements Runnable {
 		
 		stop();
 	}
-
 }
