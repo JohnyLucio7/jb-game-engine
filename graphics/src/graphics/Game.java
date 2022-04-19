@@ -11,12 +11,13 @@ import java.awt.image.BufferedImage;
 import javax.swing.JFrame;
 
 /**
- * Classe principal onde são definidos todos os métodos e atributos que compõem o núcleo da game engine.
- * É responsável pela inicialização do Frame e da Thread, assim como, pela implementação dos loops de 
- * renderização e atualização e controle de FPS (Frames Por Segundo).
+ * Classe principal onde são definidos todos os métodos e atributos que compõem
+ * o núcleo da game engine. É responsável pela inicialização do Frame e da
+ * Thread, assim como, pela implementação dos loops de renderização e
+ * atualização e controle de FPS (Frames Por Segundo).
  * 
  * @author Johny Lúcio: BTI/IMD - N - 20200039648 - UFRN.
- * */
+ */
 public class Game extends Canvas implements Runnable {
 
 	private static final long serialVersionUID = 1L;
@@ -28,8 +29,12 @@ public class Game extends Canvas implements Runnable {
 	private final int SCALE = 3;
 
 	private BufferedImage biImage;
+	private Spritesheet spritesheet;
+	private BufferedImage player;
 
 	public Game() {
+		spritesheet = new Spritesheet("/spritesheet.png");
+		player = spritesheet.getSprite(0, 0, 16, 16);
 		this.setPreferredSize(new Dimension(WIDTH * SCALE, HEIGHT * SCALE));
 		initFrame();
 		biImage = new BufferedImage(WIDTH, HEIGHT, BufferedImage.TYPE_INT_RGB);
@@ -51,11 +56,11 @@ public class Game extends Canvas implements Runnable {
 		isRunning = true;
 		thread.start();
 	}
-	
+
 	/** Método que finaliza da execução da thread */
 	public synchronized void stop() {
 		isRunning = false;
-		
+
 		try {
 			thread.join();
 		} catch (InterruptedException e) {
@@ -88,35 +93,39 @@ public class Game extends Canvas implements Runnable {
 
 		Graphics g = biImage.getGraphics();
 		/*
-		 * Tudo dentro desse bloco a partir da criação do objeto "g" está escalonado de acordo com a constante SCALE
-		 * tendo em vista que ela só é desenhada no frame a partir da sentensa g.drawImage(...). Tudo está sendo desenhando
-		 * na imagem e como ela está sendo multiplicada por SCALE qualquer coisa que for desenhada nela será escalonada.
+		 * Tudo dentro desse bloco a partir da criação do objeto "g" está escalonado de
+		 * acordo com a constante SCALE tendo em vista que ela só é desenhada no frame a
+		 * partir da sentensa g.drawImage(...). Tudo está sendo desenhando na imagem e
+		 * como ela está sendo multiplicada por SCALE qualquer coisa que for desenhada
+		 * nela será escalonada.
 		 * 
-		 * */
-		
+		 */
+
 		// -- Seção de renderização escalonada | Início
-		
+
 		g.setColor(new Color(40, 40, 40)); // COR DO PLANO DE FUNDO (BG)
 		g.fillRect(0, 0, WIDTH, HEIGHT);
-		
-		
-		g.setColor(Color.CYAN);	
-		g.fillRect(20, 20, 80, 80); // Exemplo de retangulo
-		
-		g.setFont(new Font("Arial", Font.BOLD, 16));
-		g.setColor(Color.WHITE);
-		g.drawString("Hello World", 19, 19);
+
+//		g.setColor(Color.CYAN);
+//		g.fillRect(20, 20, 80, 80); // Exemplo de retangulo
+//
+//		g.setFont(new Font("Arial", Font.BOLD, 16));
+//		g.setColor(Color.WHITE);
+//		g.drawString("Hello World", 19, 19);
+
+		g.drawImage(player, 50, 50, null);
 
 		// -- Seção de renderização escalonada | Fim
-		
+
+		g.dispose();
 		g = bs.getDrawGraphics();
 		/*
-		 * O objeto da imagem foi criado com os valores de WIDTH e HEIGHT padrões e a partir da sentança a baixo foi
-		 * desenhada sendo multiplicada pela constante SCALE. Assim tudo que for desenhado antes disso será SCALE vezes
-		 * maior. 
-		 * */
+		 * O objeto da imagem foi criado com os valores de WIDTH e HEIGHT padrões e a
+		 * partir da sentança a baixo foi desenhada sendo multiplicada pela constante
+		 * SCALE. Assim tudo que for desenhado antes disso será SCALE vezes maior.
+		 */
 		g.drawImage(biImage, 0, 0, WIDTH * SCALE, HEIGHT * SCALE, null); // DESENHO DA IMAGEM NO FRAME
-		
+
 		bs.show();
 	}
 
@@ -148,7 +157,7 @@ public class Game extends Canvas implements Runnable {
 				timer += 1000;
 			}
 		}
-		
+
 		stop();
 	}
 }
