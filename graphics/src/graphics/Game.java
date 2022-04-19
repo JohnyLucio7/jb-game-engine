@@ -113,7 +113,7 @@ public class Game extends Canvas implements Runnable {
 //		g.setColor(Color.WHITE);
 //		g.drawString("Hello World", 19, 19);
 
-		g.drawImage(player, 50, 50, null);
+		g.drawImage(player, 50, 50, null); 
 
 		// -- Seção de renderização escalonada | Fim
 
