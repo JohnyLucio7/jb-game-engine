@@ -5,6 +5,7 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Graphics;
+import java.awt.Graphics2D;
 import java.awt.image.BufferStrategy;
 import java.awt.image.BufferedImage;
 
@@ -30,16 +31,25 @@ public class Game extends Canvas implements Runnable {
 
 	private BufferedImage biImage;
 	private Spritesheet spritesheet;
-	private BufferedImage player;
+	private BufferedImage[] player;
+	private int playerAnimFrames = 0;
+	private int playerAnimMaxFrames = 20;
+	private int playerAnimCurrFrame = 0;
+	private int playerAnimMaxCurrFrame = 4;
 
+	// testes
 	private int x = 50; // fins de teste
 	private int y = 50; // fins de teste
 	private int dir = 1; // fins de teste
-	private boolean enableCollider = false; // fins de teste
+	private boolean enableCollider = true; // fins de teste
 
 	public Game() {
 		spritesheet = new Spritesheet("/spritesheet.png");
-		player = spritesheet.getSprite(0, 0, 16, 16);
+		player = new BufferedImage[4];
+		for (int i = 0; i < 4; i++) {
+			player[i] = spritesheet.getSprite((i * 16), 0, 16, 16);
+		}
+
 		this.setPreferredSize(new Dimension(WIDTH * SCALE, HEIGHT * SCALE));
 		initFrame();
 		biImage = new BufferedImage(WIDTH, HEIGHT, BufferedImage.TYPE_INT_RGB);
@@ -80,12 +90,25 @@ public class Game extends Canvas implements Runnable {
 
 	/** Método de atualização principal */
 	public void tick() {
+		
+		playerAnimFrames++;
+
+		if (playerAnimFrames > playerAnimMaxFrames) {
+			playerAnimFrames = 0;
+			playerAnimCurrFrame++;
+			if (playerAnimCurrFrame >= playerAnimMaxCurrFrame) {
+				playerAnimCurrFrame = 0;
+			}
+		}
+		
+		
 		x += dir;
 		if (x >= WIDTH - 16) {
 			dir *= -1;
 		} else if (x <= 0) {
 			dir *= -1;
 		}
+
 	}
 
 	public void render() {
@@ -116,18 +139,29 @@ public class Game extends Canvas implements Runnable {
 		g.setColor(new Color(40, 40, 40)); // COR DO PLANO DE FUNDO (BG)
 		g.fillRect(0, 0, WIDTH, HEIGHT);
 
+		// Exemplo de retangulo
 //		g.setColor(Color.CYAN);
-//		g.fillRect(20, 20, 80, 80); // Exemplo de retangulo
-//
+//		g.fillRect(20, 20, 80, 80); 
+
+		// Exemplo de texto
 //		g.setFont(new Font("Arial", Font.BOLD, 16));
 //		g.setColor(Color.WHITE);
 //		g.drawString("Hello World", 19, 19);
 
-		g.drawImage(player, x, y, null);
-		g.setColor(Color.GREEN);
+		// Exemplo de rotação com Graphics 2D
+//		Graphics2D g2d = (Graphics2D) g;
+//		g2d.rotate(Math.toRadians(45), x+8, y+8);
+//		g2d.rotate(Math.toRadians(-45), x+8, y+8);
 
-		// apenas para fins de teste, colisor amador
+		g.drawImage(player[playerAnimCurrFrame], x, y, null);
+
+		// Exemplo de layer
+		g.setColor(new Color(0, 0, 0, 0));
+		g.fillRect(0, 0, WIDTH, HEIGHT);
+
+		// Apenas para fins de teste, colisor amador
 		if (enableCollider) {
+			g.setColor(Color.GREEN);
 			g.drawLine(x, y, x + 16, y);
 			g.drawLine(x, y + 16, x + 16, y + 16);
 			g.drawLine(x, y, x, y + 16);
