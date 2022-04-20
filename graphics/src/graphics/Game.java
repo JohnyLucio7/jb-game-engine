@@ -32,6 +32,11 @@ public class Game extends Canvas implements Runnable {
 	private Spritesheet spritesheet;
 	private BufferedImage player;
 
+	private int x = 50; // fins de teste
+	private int y = 50; // fins de teste
+	private int dir = 1; // fins de teste
+	private boolean enableCollider = false; // fins de teste
+
 	public Game() {
 		spritesheet = new Spritesheet("/spritesheet.png");
 		player = spritesheet.getSprite(0, 0, 16, 16);
@@ -75,13 +80,18 @@ public class Game extends Canvas implements Runnable {
 
 	/** Método de atualização principal */
 	public void tick() {
-
+		x += dir;
+		if (x >= WIDTH - 16) {
+			dir *= -1;
+		} else if (x <= 0) {
+			dir *= -1;
+		}
 	}
 
 	public void render() {
 
 		/*
-		 * BufferStrategy � uma sequ�ncia de buffers colocados em tela para otimizar a
+		 * BufferStrategy é uma sequência de buffers colocados em tela para otimizar a
 		 * renderização.
 		 */
 		BufferStrategy bs = this.getBufferStrategy();
@@ -113,7 +123,16 @@ public class Game extends Canvas implements Runnable {
 //		g.setColor(Color.WHITE);
 //		g.drawString("Hello World", 19, 19);
 
-		g.drawImage(player, 50, 50, null); 
+		g.drawImage(player, x, y, null);
+		g.setColor(Color.GREEN);
+
+		// apenas para fins de teste, colisor amador
+		if (enableCollider) {
+			g.drawLine(x, y, x + 16, y);
+			g.drawLine(x, y + 16, x + 16, y + 16);
+			g.drawLine(x, y, x, y + 16);
+			g.drawLine(x + 16, y, x + 16, y + 16);
+		}
 
 		// -- Seção de renderização escalonada | Fim
 
