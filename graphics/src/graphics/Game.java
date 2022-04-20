@@ -28,12 +28,13 @@ public class Game extends Canvas implements Runnable {
 	private final int WIDTH = 240;
 	private final int HEIGHT = 160;
 	private final int SCALE = 3;
+	private final double FPS = 60.0;
 
 	private BufferedImage biImage;
 	private Spritesheet spritesheet;
 	private BufferedImage[] player;
 	private int playerAnimFrames = 0;
-	private int playerAnimMaxFrames = 20;
+	private int playerAnimMaxFrames = 12;
 	private int playerAnimCurrFrame = 0;
 	private int playerAnimMaxCurrFrame = 4;
 
@@ -185,7 +186,7 @@ public class Game extends Canvas implements Runnable {
 	public void run() {
 
 		long lastTime = System.nanoTime();
-		double amountOfTicks = 60.0;
+		double amountOfTicks = FPS;
 		double ns = 1000000000 / amountOfTicks;
 		double delta = 0;
 		int frames = 0;
