@@ -34,7 +34,7 @@ public class Game extends Canvas implements Runnable {
 	private Spritesheet spritesheet;
 	private BufferedImage[] player;
 	private int playerAnimFrames = 0;
-	private int playerAnimMaxFrames = 12;
+	private int playerAnimMaxFrames = 6;
 	private int playerAnimCurrFrame = 0;
 	private int playerAnimMaxCurrFrame = 4;
 
@@ -42,7 +42,7 @@ public class Game extends Canvas implements Runnable {
 	private int x = 50; // fins de teste
 	private int y = 50; // fins de teste
 	private int dir = 1; // fins de teste
-	private boolean enableCollider = true; // fins de teste
+	private boolean enableCollider = false; // fins de teste
 
 	public Game() {
 		spritesheet = new Spritesheet("/spritesheet.png");
@@ -91,19 +91,28 @@ public class Game extends Canvas implements Runnable {
 
 	/** Método de atualização principal */
 	public void tick() {
-		
+
+//		if (playerAnimFrames > playerAnimMaxFrames) {
+//			
+//			playerAnimFrames = 0;
+//			playerAnimCurrFrame++;
+//			
+//			if (playerAnimCurrFrame >= playerAnimMaxCurrFrame) {
+//				playerAnimCurrFrame = 0;
+//			}
+//		}
+
+		if (playerAnimFrames >= playerAnimMaxFrames) {
+
+			playerAnimCurrFrame++;
+			playerAnimCurrFrame %= playerAnimMaxCurrFrame;
+		}
+
+		playerAnimFrames %= playerAnimMaxFrames;
 		playerAnimFrames++;
 
-		if (playerAnimFrames > playerAnimMaxFrames) {
-			playerAnimFrames = 0;
-			playerAnimCurrFrame++;
-			if (playerAnimCurrFrame >= playerAnimMaxCurrFrame) {
-				playerAnimCurrFrame = 0;
-			}
-		}
-		
-		
 		x += dir;
+
 		if (x >= WIDTH - 16) {
 			dir *= -1;
 		} else if (x <= 0) {
@@ -162,11 +171,19 @@ public class Game extends Canvas implements Runnable {
 
 		// Apenas para fins de teste, colisor amador
 		if (enableCollider) {
+
 			g.setColor(Color.GREEN);
-			g.drawLine(x, y, x + 16, y);
-			g.drawLine(x, y + 16, x + 16, y + 16);
-			g.drawLine(x, y, x, y + 16);
-			g.drawLine(x + 16, y, x + 16, y + 16);
+
+			/*
+			 * top/left (20, 50) top/right (x is different from above, y is the same)
+			 * bottom/right (x is same as above, y is different. bottom/left (x is same as
+			 * first, y is save as above)
+			 */
+
+			int[] dx = new int[] { x, x + 16, x + 16, x };
+			int[] dy = new int[] { y, y, y + 16, y + 16 };
+
+			g.drawPolygon(dx, dy, 4);
 		}
 
 		// -- Seção de renderização escalonada | Fim
