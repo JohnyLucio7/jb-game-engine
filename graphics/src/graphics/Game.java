@@ -91,17 +91,7 @@ public class Game extends Canvas implements Runnable {
 
 	/** Método de atualização principal */
 	public void tick() {
-
-//		if (playerAnimFrames > playerAnimMaxFrames) {
-//			
-//			playerAnimFrames = 0;
-//			playerAnimCurrFrame++;
-//			
-//			if (playerAnimCurrFrame >= playerAnimMaxCurrFrame) {
-//				playerAnimCurrFrame = 0;
-//			}
-//		}
-
+		
 		if (playerAnimFrames >= playerAnimMaxFrames) {
 
 			playerAnimCurrFrame++;
