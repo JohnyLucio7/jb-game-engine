@@ -3,9 +3,7 @@ package graphics;
 import java.awt.Canvas;
 import java.awt.Color;
 import java.awt.Dimension;
-import java.awt.Font;
 import java.awt.Graphics;
-import java.awt.Graphics2D;
 import java.awt.image.BufferStrategy;
 import java.awt.image.BufferedImage;
 
@@ -31,33 +29,15 @@ public class Game extends Canvas implements Runnable {
 	private final double FPS = 60.0;
 
 	private BufferedImage biImage;
-	private Spritesheet spritesheet;
-	private BufferedImage[] player;
-	private int playerAnimFrames = 0;
-	private int playerAnimMaxFrames = 6;
-	private int playerAnimCurrFrame = 0;
-	private int playerAnimMaxCurrFrame = 4;
-
-	// testes
-	private int x = 50; // fins de teste
-	private int y = 50; // fins de teste
-	private int dir = 1; // fins de teste
-	private boolean enableCollider = false; // fins de teste
 
 	public Game() {
-		spritesheet = new Spritesheet("/spritesheet.png");
-		player = new BufferedImage[4];
-		for (int i = 0; i < 4; i++) {
-			player[i] = spritesheet.getSprite((i * 16), 0, 16, 16);
-		}
-
 		this.setPreferredSize(new Dimension(WIDTH * SCALE, HEIGHT * SCALE));
 		initFrame();
 		biImage = new BufferedImage(WIDTH, HEIGHT, BufferedImage.TYPE_INT_RGB);
 	}
 
 	public void initFrame() {
-		frame = new JFrame("Game #01");
+		frame = new JFrame("Zelda Clone");
 		frame.add(this);
 		frame.setResizable(false);
 		frame.pack();
@@ -91,32 +71,11 @@ public class Game extends Canvas implements Runnable {
 
 	/** Método de atualização principal */
 	public void tick() {
-		
-		if (playerAnimFrames >= playerAnimMaxFrames) {
-
-			playerAnimCurrFrame++;
-			playerAnimCurrFrame %= playerAnimMaxCurrFrame;
-		}
-
-		playerAnimFrames %= playerAnimMaxFrames;
-		playerAnimFrames++;
-
-		x += dir;
-
-		if (x >= WIDTH - 16) {
-			dir *= -1;
-		} else if (x <= 0) {
-			dir *= -1;
-		}
 
 	}
 
 	public void render() {
 
-		/*
-		 * BufferStrategy é uma sequência de buffers colocados em tela para otimizar a
-		 * renderização.
-		 */
 		BufferStrategy bs = this.getBufferStrategy();
 
 		if (bs == null) {
@@ -125,68 +84,19 @@ public class Game extends Canvas implements Runnable {
 		}
 
 		Graphics g = biImage.getGraphics();
-		/*
-		 * Tudo dentro desse bloco a partir da criação do objeto "g" está escalonado de
-		 * acordo com a constante SCALE tendo em vista que ela só é desenhada no frame a
-		 * partir da sentensa g.drawImage(...). Tudo está sendo desenhando na imagem e
-		 * como ela está sendo multiplicada por SCALE qualquer coisa que for desenhada
-		 * nela será escalonada.
-		 * 
-		 */
 
 		// -- Seção de renderização escalonada | Início
 
 		g.setColor(new Color(40, 40, 40)); // COR DO PLANO DE FUNDO (BG)
 		g.fillRect(0, 0, WIDTH, HEIGHT);
 
-		// Exemplo de retangulo
-//		g.setColor(Color.CYAN);
-//		g.fillRect(20, 20, 80, 80); 
-
-		// Exemplo de texto
-//		g.setFont(new Font("Arial", Font.BOLD, 16));
-//		g.setColor(Color.WHITE);
-//		g.drawString("Hello World", 19, 19);
-
-		// Exemplo de rotação com Graphics 2D
-//		Graphics2D g2d = (Graphics2D) g;
-//		g2d.rotate(Math.toRadians(45), x+8, y+8);
-//		g2d.rotate(Math.toRadians(-45), x+8, y+8);
-
-		g.drawImage(player[playerAnimCurrFrame], x, y, null);
-
-		// Exemplo de layer
-		g.setColor(new Color(0, 0, 0, 0));
-		g.fillRect(0, 0, WIDTH, HEIGHT);
-
-		// Apenas para fins de teste, colisor amador
-		if (enableCollider) {
-
-			g.setColor(Color.GREEN);
-
-			/*
-			 * top/left (20, 50) top/right (x is different from above, y is the same)
-			 * bottom/right (x is same as above, y is different. bottom/left (x is same as
-			 * first, y is save as above)
-			 */
-
-			int[] dx = new int[] { x, x + 16, x + 16, x };
-			int[] dy = new int[] { y, y, y + 16, y + 16 };
-
-			g.drawPolygon(dx, dy, 4);
-		}
 
 		// -- Seção de renderização escalonada | Fim
 
 		g.dispose();
 		g = bs.getDrawGraphics();
-		/*
-		 * O objeto da imagem foi criado com os valores de WIDTH e HEIGHT padrões e a
-		 * partir da sentança a baixo foi desenhada sendo multiplicada pela constante
-		 * SCALE. Assim tudo que for desenhado antes disso será SCALE vezes maior.
-		 */
 		g.drawImage(biImage, 0, 0, WIDTH * SCALE, HEIGHT * SCALE, null); // DESENHO DA IMAGEM NO FRAME
-
+		
 		bs.show();
 	}
 
