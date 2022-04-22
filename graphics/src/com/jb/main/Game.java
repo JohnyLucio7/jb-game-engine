@@ -1,4 +1,4 @@
-package graphics;
+package com.jb.main;
 
 import java.awt.Canvas;
 import java.awt.Color;
@@ -6,8 +6,14 @@ import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.image.BufferStrategy;
 import java.awt.image.BufferedImage;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.swing.JFrame;
+
+import com.jb.entities.Entity;
+import com.jb.entities.Player;
+import com.jb.graphics.Spritesheet;
 
 /**
  * Classe principal onde são definidos todos os métodos e atributos que compõem
@@ -27,13 +33,19 @@ public class Game extends Canvas implements Runnable {
 	private final int HEIGHT = 160;
 	private final int SCALE = 3;
 	private final double FPS = 60.0;
-
 	private BufferedImage biImage;
+	public List<Entity> entities;
+	public Spritesheet spritesheet;
 
 	public Game() {
 		this.setPreferredSize(new Dimension(WIDTH * SCALE, HEIGHT * SCALE));
 		initFrame();
+		/* Inicializando objetos*/
 		biImage = new BufferedImage(WIDTH, HEIGHT, BufferedImage.TYPE_INT_RGB);
+		entities = new ArrayList<Entity>();
+		spritesheet = new Spritesheet("/spritesheet.png");
+		Player player = new Player(0, 0, 16, 16, spritesheet.getSprite(32, 0, 16, 16));
+		entities.add(player);
 	}
 
 	public void initFrame() {
@@ -71,7 +83,10 @@ public class Game extends Canvas implements Runnable {
 
 	/** Método de atualização principal */
 	public void tick() {
-
+		for (int i = 0; i < entities.size(); i++) {
+			Entity e = entities.get(i);
+			e.tick();
+		}
 	}
 
 	public void render() {
@@ -85,18 +100,22 @@ public class Game extends Canvas implements Runnable {
 
 		Graphics g = biImage.getGraphics();
 
-		// -- Seção de renderização escalonada | Início
+		/* -- Seção de renderização escalonada | Início */
 
 		g.setColor(new Color(40, 40, 40)); // COR DO PLANO DE FUNDO (BG)
 		g.fillRect(0, 0, WIDTH, HEIGHT);
 
+		for (int i = 0; i < entities.size(); i++) {
+			Entity e = entities.get(i);
+			e.render(g);
+		}
 
-		// -- Seção de renderização escalonada | Fim
+		/* -- Seção de renderização escalonada | Fim */
 
 		g.dispose();
 		g = bs.getDrawGraphics();
 		g.drawImage(biImage, 0, 0, WIDTH * SCALE, HEIGHT * SCALE, null); // DESENHO DA IMAGEM NO FRAME
-		
+
 		bs.show();
 	}
 

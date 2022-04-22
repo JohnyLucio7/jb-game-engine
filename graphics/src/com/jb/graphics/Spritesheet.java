@@ -1,4 +1,4 @@
-package graphics;
+package com.jb.graphics;
 
 import java.awt.image.BufferedImage;
 import java.io.IOException;
