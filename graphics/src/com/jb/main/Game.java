@@ -37,7 +37,7 @@ public class Game extends Canvas implements Runnable, KeyListener {
 	private final double FPS = 60.0;
 	private BufferedImage biImage;
 	public List<Entity> entities;
-	public Spritesheet spritesheet;
+	public static Spritesheet spritesheet;
 	private Player player;
 
 	public Game() {
