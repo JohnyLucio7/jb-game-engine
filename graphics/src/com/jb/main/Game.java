@@ -16,6 +16,7 @@ import javax.swing.JFrame;
 import com.jb.entities.Entity;
 import com.jb.entities.Player;
 import com.jb.graphics.Spritesheet;
+import com.jb.world.World;
 
 /**
  * Classe principal onde são definidos todos os métodos e atributos que compõem
@@ -38,6 +39,7 @@ public class Game extends Canvas implements Runnable, KeyListener {
 	private BufferedImage biImage;
 	public List<Entity> entities;
 	public static Spritesheet spritesheet;
+	public static World world;
 	private Player player;
 
 	public Game() {
@@ -49,6 +51,7 @@ public class Game extends Canvas implements Runnable, KeyListener {
 		biImage = new BufferedImage(WIDTH, HEIGHT, BufferedImage.TYPE_INT_RGB);
 		entities = new ArrayList<Entity>();
 		spritesheet = new Spritesheet("/spritesheet.png");
+		world = new World("/map.png");
 		player = new Player(0, 0, 16, 16, spritesheet.getSprite(32, 0, 16, 16));
 		entities.add(player);
 	}
@@ -110,6 +113,8 @@ public class Game extends Canvas implements Runnable, KeyListener {
 		g.setColor(new Color(40, 40, 40)); // COR DO PLANO DE FUNDO (BG)
 		g.fillRect(0, 0, WIDTH, HEIGHT);
 
+		world.render(g);
+		
 		for (int i = 0; i < entities.size(); i++) {
 			Entity e = entities.get(i);
 			e.render(g);
