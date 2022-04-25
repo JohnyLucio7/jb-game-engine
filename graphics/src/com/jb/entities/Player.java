@@ -4,12 +4,13 @@ import java.awt.Graphics;
 import java.awt.image.BufferedImage;
 
 import com.jb.main.Game;
+import com.jb.world.Camera;
 
 public class Player extends Entity {
 
 	private boolean right, up, left, down;
 	private int speed = 1;
-	private int dir = 0, dir_left = 1, dir_right = 0;
+	private int dir = 0, dir_left = 1, dir_right = 0; // substituir por enum
 
 	private int playerAnimFrames = 0;
 	private int playerAnimeMaxFrames = 5;
@@ -64,14 +65,18 @@ public class Player extends Entity {
 		} else {
 			playerAnimSpriteIndex = 0;
 		}
+
+		Camera.x = this.getX() - (Game.WIDTH / 2);
+		Camera.y = this.getY() - (Game.HEIGHT / 2);
+
 	}
 
 	public void render(Graphics g) {
 
 		if (dir == dir_right) {
-			g.drawImage(playerRight[playerAnimSpriteIndex], this.getX(), this.getY(), null);
+			g.drawImage(playerRight[playerAnimSpriteIndex], this.getX() - Camera.x, this.getY() - Camera.y, null);
 		} else if (dir == dir_left) {
-			g.drawImage(playerLeft[playerAnimSpriteIndex], this.getX(), this.getY(), null);
+			g.drawImage(playerLeft[playerAnimSpriteIndex], this.getX() - Camera.x, this.getY() - Camera.y, null);
 		}
 
 	}

@@ -32,9 +32,9 @@ public class Game extends Canvas implements Runnable, KeyListener {
 	public static JFrame frame;
 	private Thread thread;
 	private boolean isRunning = true;
-	private final int WIDTH = 240; // 240
-	private final int HEIGHT = 160; // 160
-	private final int SCALE = 3;
+	public static final int WIDTH = 240; // 240
+	public static final int HEIGHT = 160; // 160
+	public static final int SCALE = 3;
 	private final double FPS = 60.0;
 	private BufferedImage biImage;
 	public static List<Entity> entities;
@@ -53,7 +53,7 @@ public class Game extends Canvas implements Runnable, KeyListener {
 		spritesheet = new Spritesheet("/spritesheet.png");
 		player = new Player(0, 0, 16, 16, spritesheet.getSprite(32, 0, 16, 16));
 		entities.add(player);
-		world = new World("/map.png");	
+		world = new World("/map.png");
 	}
 
 	public void initFrame() {
@@ -114,7 +114,7 @@ public class Game extends Canvas implements Runnable, KeyListener {
 		g.fillRect(0, 0, WIDTH, HEIGHT);
 
 		world.render(g);
-		
+
 		for (int i = 0; i < entities.size(); i++) {
 			Entity e = entities.get(i);
 			e.render(g);
