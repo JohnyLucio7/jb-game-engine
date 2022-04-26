@@ -1,6 +1,5 @@
 package com.jb.world;
 
-import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
@@ -73,8 +72,16 @@ public class World {
 	}
 
 	public void render(Graphics g) {
-		for (int x = 0; x < WIDTH; x++) {
-			for (int y = 0; y < HEIGHT; y++) {
+		int xstart = Camera.x >> 4;
+		int ystart = Camera.y >> 4;
+
+		int xfinal = xstart + (Game.WIDTH >> 4);
+		int yfinal = ystart + (Game.HEIGHT >> 4);
+
+		for (int x = xstart; x <= xfinal; x++) {
+			for (int y = ystart; y <= yfinal; y++) {
+				if (x < 0 || y < 0 || x >= WIDTH || y >= HEIGHT)
+					continue;
 				Tile tile = tiles[x + (y * WIDTH)];
 				tile.render(g);
 			}

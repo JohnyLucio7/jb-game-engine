@@ -5,6 +5,7 @@ import java.awt.image.BufferedImage;
 
 import com.jb.main.Game;
 import com.jb.world.Camera;
+import com.jb.world.World;
 
 public class Player extends Entity {
 
@@ -66,8 +67,8 @@ public class Player extends Entity {
 			playerAnimSpriteIndex = 0;
 		}
 
-		Camera.x = this.getX() - (Game.WIDTH / 2);
-		Camera.y = this.getY() - (Game.HEIGHT / 2);
+		Camera.x = Camera.clamp(this.getX() - (Game.WIDTH / 2), 0, World.WIDTH * 16 - Game.WIDTH);
+		Camera.y = Camera.clamp(this.getY() - (Game.HEIGHT / 2), 0, World.HEIGHT * 16 - Game.HEIGHT);
 
 	}
 
