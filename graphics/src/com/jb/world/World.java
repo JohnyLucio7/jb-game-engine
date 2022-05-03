@@ -7,6 +7,7 @@ import java.io.IOException;
 import javax.imageio.ImageIO;
 
 import com.jb.entities.Bullet;
+import com.jb.entities.Enemy;
 import com.jb.entities.Entity;
 import com.jb.entities.Lifepack;
 import com.jb.entities.Weapon;
@@ -59,7 +60,7 @@ public class World {
 						break;
 					case 0xFFFF0000:
 						// red, Enemy
-						Game.entities.add(new Entity(x * 16, y * 16, 16, 16, Entity.ENEMY_EN));
+						Game.entities.add(new Enemy(x * 16, y * 16, 16, 16, Entity.ENEMY_EN));
 						break;
 					default:
 						tiles[x + (y * WIDTH)] = new FloorTile(x * 16, y * 16, Tile.TILE_FLOOR);
