@@ -18,8 +18,26 @@ public class Enemy extends Entity {
 	private int maskh = 10;
 	private boolean enableCollisionMask = false;
 
+	/** Variáveis de Animação */
+
+	private int enemyAnimFrames = 0;
+	private int enemyAnimeMaxFrames = 5;
+	private int enemyAnimSpriteIndex = 0;
+	private int enemyAnimeMaxSpriteIndex = 4;
+	private BufferedImage[] enemyLeft;
+	private BufferedImage[] enemyRight;
+	private int dir = 0, dir_left = 1, dir_right = 0; // substituir por enum
+
 	public Enemy(int x, int y, int width, int height, BufferedImage sprite) {
-		super(x, y, width, height, sprite);
+		super(x, y, width, height, null);
+
+		enemyRight = new BufferedImage[4];
+		enemyLeft = new BufferedImage[4];
+
+		for (int i = 0; i < 4; i++) {
+			enemyRight[i] = Game.spritesheet.getSprite(32 + (i * 16), 64, width, height);
+			enemyLeft[i] = Game.spritesheet.getSprite(32 + (i * 16), 80, width, height);
+		}
 	}
 
 	public void tick() {
@@ -27,18 +45,46 @@ public class Enemy extends Entity {
 		if (Game.rand.nextInt(100) < 50) {
 
 			if (this.getX() < Game.player.getX() && World.isFree(this.getX() + speed, this.getY())
-					&& !isColliding(this.getX() + speed, this.getY()))
+					&& !isColliding(this.getX() + speed, this.getY())) {
+				//
 				this.setX(this.getX() + speed);
-			else if (this.getX() > Game.player.getX() && World.isFree(this.getX() - speed, this.getY())
-					&& !isColliding(this.getX() - speed, this.getY()))
+				dir = dir_right;
+			} else if (this.getX() > Game.player.getX() && World.isFree(this.getX() - speed, this.getY())
+					&& !isColliding(this.getX() - speed, this.getY())) {
+				//
 				this.setX(this.getX() - speed);
+				dir = dir_left;
+			}
 
 			if (this.getY() < Game.player.getY() && World.isFree(this.getX(), this.getY() + speed)
-					&& !isColliding(this.getX(), this.getY() + speed))
+					&& !isColliding(this.getX(), this.getY() + speed)) {
+				//
 				this.setY(this.getY() + speed);
-			else if (this.getY() > Game.player.getY() && World.isFree(this.getX(), this.getY() - speed)
-					&& !isColliding(this.getX(), this.getY() - speed))
+			} else if (this.getY() > Game.player.getY() && World.isFree(this.getX(), this.getY() - speed)
+					&& !isColliding(this.getX(), this.getY() - speed)) {
+				//
 				this.setY(this.getY() - speed);
+			}
+		}
+
+		if (enemyAnimFrames >= enemyAnimeMaxFrames) {
+			enemyAnimSpriteIndex++;
+			enemyAnimSpriteIndex %= enemyAnimeMaxSpriteIndex;
+		}
+		enemyAnimFrames %= enemyAnimeMaxFrames;
+		enemyAnimFrames++;
+
+	}
+
+	public void render(Graphics g) {
+		if (dir == dir_right) {
+			g.drawImage(enemyRight[enemyAnimSpriteIndex], this.getX() - Camera.x, this.getY() - Camera.y, null);
+		} else if (dir == dir_left) {
+			g.drawImage(enemyLeft[enemyAnimSpriteIndex], this.getX() - Camera.x, this.getY() - Camera.y, null);
+		}
+
+		if (enableCollisionMask) {
+			showCollisionMask(g);
 		}
 	}
 
@@ -57,12 +103,6 @@ public class Enemy extends Entity {
 		}
 
 		return false;
-	}
-
-	public void render(Graphics g) {
-		super.render(g);
-		if (enableCollisionMask)
-			showCollisionMask(g);
 	}
 
 	private void showCollisionMask(Graphics g) {

@@ -10,7 +10,7 @@ import com.jb.world.World;
 public class Player extends Entity {
 
 	private boolean right, up, left, down;
-	private int speed = 2;
+	private int speed = 1;
 	private int dir = 0, dir_left = 1, dir_right = 0; // substituir por enum
 
 	private int playerAnimFrames = 0;
