@@ -60,7 +60,9 @@ public class World {
 						break;
 					case 0xFFFF0000:
 						// red, Enemy
-						Game.entities.add(new Enemy(x * 16, y * 16, 16, 16, Entity.ENEMY_EN));
+						Enemy enemy = new Enemy(x * 16, y * 16, 16, 16, Entity.ENEMY_EN);
+						Game.entities.add(enemy);
+						Game.enemies.add(enemy);
 						break;
 					default:
 						tiles[x + (y * WIDTH)] = new FloorTile(x * 16, y * 16, Tile.TILE_FLOOR);
