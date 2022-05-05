@@ -1,5 +1,6 @@
 package com.jb.entities;
 
+import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.image.BufferedImage;
 
@@ -18,9 +19,12 @@ public class Player extends Entity {
 	private int playerAnimSpriteIndex = 0;
 	private int playerAnimeMaxSpriteIndex = 4;
 	private boolean moved = false;
+	private boolean enableRectCollisionMask = false;
 
 	private BufferedImage[] playerLeft;
 	private BufferedImage[] playerRight;
+
+	public int life = 100;
 
 	public Player(int x, int y, int width, int height, BufferedImage sprite) {
 		super(x, y, width, height, sprite);
@@ -78,6 +82,11 @@ public class Player extends Entity {
 			g.drawImage(playerRight[playerAnimSpriteIndex], this.getX() - Camera.x, this.getY() - Camera.y, null);
 		} else if (dir == dir_left) {
 			g.drawImage(playerLeft[playerAnimSpriteIndex], this.getX() - Camera.x, this.getY() - Camera.y, null);
+		}
+
+		if (enableRectCollisionMask) {
+			g.setColor(new Color(0, 0, 255, 100));
+			g.fillRect(getX() - Camera.x, getY() - Camera.y, 16, 16);
 		}
 
 	}
