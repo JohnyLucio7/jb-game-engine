@@ -24,8 +24,8 @@ public class Player extends Entity {
 	private BufferedImage[] playerLeft;
 	private BufferedImage[] playerRight;
 
-	public static double life = 100;
-	public static int maxLife = 100;
+	public double life = 100;
+	public int maxLife = 100;
 
 	public Player(int x, int y, int width, int height, BufferedImage sprite) {
 		super(x, y, width, height, sprite);
@@ -89,6 +89,23 @@ public class Player extends Entity {
 			g.setColor(new Color(0, 0, 255, 100));
 			g.fillRect(getX() - Camera.x, getY() - Camera.y, 16, 16);
 		}
+
+	}
+
+	public int getMaxLife() {
+		return this.maxLife;
+	}
+
+	public double getLife() {
+		return this.life;
+	}
+
+	public void setLife(double nl) {
+
+		if (this.life <= 0)
+			this.life = 0;
+		else
+			this.life = nl;
 
 	}
 

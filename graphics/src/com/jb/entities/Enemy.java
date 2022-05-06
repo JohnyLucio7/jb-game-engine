@@ -71,15 +71,18 @@ public class Enemy extends Entity {
 			// perto do player
 
 			if (Game.rand.nextInt(100) < 10) {
-				Game.player.life -= Game.rand.nextInt(3);
-
-				if (Game.player.life <= 0) {
-					// Game over
-					Game.player.life = 0;
-					System.out.println("HP: " + Game.player.life + " Game Over!");
-				} else {
-					System.out.println("HP: " + Game.player.life);
-				}
+				
+				Game.player.setLife(Game.player.getLife() - Game.rand.nextInt(3));
+				
+//				Game.player.life -= Game.rand.nextInt(3);
+//				if (Game.player.life <= 0) {
+//					// Game over
+//					Game.player.life = 0;
+//					System.out.println("HP: " + Game.player.life + " Game Over!");
+//				} else {
+//					System.out.println("HP: " + Game.player.life);
+//				}
+							
 			}
 		}
 
