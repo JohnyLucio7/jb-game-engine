@@ -18,6 +18,7 @@ import com.jb.entities.Enemy;
 import com.jb.entities.Entity;
 import com.jb.entities.Player;
 import com.jb.graphics.Spritesheet;
+import com.jb.graphics.UI;
 import com.jb.world.World;
 
 /**
@@ -45,6 +46,7 @@ public class Game extends Canvas implements Runnable, KeyListener {
 	public static World world;
 	public static Player player;
 	public static Random rand;
+	public UI ui;
 
 	public Game() {
 		this.addKeyListener(this);
@@ -60,6 +62,7 @@ public class Game extends Canvas implements Runnable, KeyListener {
 		player = new Player(0, 0, 16, 16, spritesheet.getSprite(32, 0, 16, 16));
 		entities.add(player);
 		world = new World("/map.png");
+		ui = new UI();
 	}
 
 	public void initFrame() {
@@ -125,6 +128,8 @@ public class Game extends Canvas implements Runnable, KeyListener {
 			Entity e = entities.get(i);
 			e.render(g);
 		}
+
+		ui.render(g);
 
 		/* -- Seção de renderização escalonada | Fim */
 
