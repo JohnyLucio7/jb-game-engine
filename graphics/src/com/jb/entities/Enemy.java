@@ -17,6 +17,7 @@ public class Enemy extends Entity {
 	private int maskw = 10;
 	private int maskh = 10;
 	private boolean enableRectCollisionMask = false;
+	private boolean enableRectCollisionWithPlayer = false;
 
 	/** Variáveis de Animação */
 
@@ -71,9 +72,9 @@ public class Enemy extends Entity {
 			// perto do player
 
 			if (Game.rand.nextInt(100) < 10) {
-				
+
 				Game.player.setLife(Game.player.getLife() - Game.rand.nextInt(3));
-				
+
 //				Game.player.life -= Game.rand.nextInt(3);
 //				if (Game.player.life <= 0) {
 //					// Game over
@@ -82,7 +83,7 @@ public class Enemy extends Entity {
 //				} else {
 //					System.out.println("HP: " + Game.player.life);
 //				}
-							
+
 			}
 		}
 
@@ -105,12 +106,18 @@ public class Enemy extends Entity {
 		if (enableRectCollisionMask) {
 			showRectCollisionMask(g);
 		}
+
+		if (enableRectCollisionWithPlayer) {
+			showRectCollisionWithPlayer(g);
+		}
 	}
 
 	public boolean isCollidingWithPlayer() {
-		int maskxp = 6;
-		int maskyp = 6;
-		Rectangle enemyCurrent = new Rectangle(this.getX(), this.getY(), maskw, maskh);
+		int maskxe = 3;
+		int maskye = 4;
+		int maskwe = 10;
+		int maskhe = 12;
+		Rectangle enemyCurrent = new Rectangle(this.getX() + maskxe, this.getY() + maskye, maskwe, maskhe);
 		Rectangle player = new Rectangle(Game.player.getX(), Game.player.getY(), 16, 16);
 
 		return enemyCurrent.intersects(player);
@@ -136,6 +143,15 @@ public class Enemy extends Entity {
 	private void showRectCollisionMask(Graphics g) {
 		g.setColor(new Color(0, 0, 255, 100));
 		g.fillRect(this.getX() + maskx - Camera.x, this.getY() + masky - Camera.y, maskw, maskh);
+	}
+
+	private void showRectCollisionWithPlayer(Graphics g) {
+		int maskxe = 3;
+		int maskye = 4;
+		int maskwe = 10;
+		int maskhe = 12;
+		g.setColor(new Color(0, 0, 255, 100));
+		g.fillRect(this.getX() + maskxe - Camera.x, this.getY() + maskye - Camera.y, maskwe, maskhe);
 	}
 
 }
