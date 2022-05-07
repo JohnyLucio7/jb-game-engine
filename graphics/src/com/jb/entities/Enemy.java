@@ -14,7 +14,7 @@ public class Enemy extends Entity {
 	private int speed = 1;
 	private boolean enableRectCollisionMask = false;
 	private boolean enableRectCollisionWithPlayer = false;
-	private boolean enableRectBorderColissionWithPlayer = false;
+	private boolean enableRectBorderColissionWithPlayer = true;
 
 	/** Variáveis de Animação */
 
@@ -100,6 +100,7 @@ public class Enemy extends Entity {
 		if (enableRectBorderColissionWithPlayer) {
 			showRectBorderColissionWithPlayer(g);
 		}
+		
 	}
 
 	public boolean isCollidingWithPlayer() {

@@ -19,13 +19,16 @@ public class Player extends Entity {
 	private int playerAnimSpriteIndex = 0;
 	private int playerAnimeMaxSpriteIndex = 4;
 	private boolean moved = false;
-	private boolean enableRectCollisionMask = false;
+	private boolean enableRectCollisionMask = true;
 
 	private BufferedImage[] playerLeft;
 	private BufferedImage[] playerRight;
 
-	public double life = 100;
-	public int maxLife = 100;
+	private double life = 100;
+	private int maxLife = 100;
+
+	private int ammo = 0;
+	private int maxAmmo = 18;
 
 	public Player(int x, int y, int width, int height, BufferedImage sprite) {
 		super(x, y, width, height, sprite);
@@ -71,7 +74,9 @@ public class Player extends Entity {
 		} else {
 			playerAnimSpriteIndex = 0;
 		}
+
 		checkCollisionWithLifepack();
+		checkCollisionWithBullet();
 
 		Camera.x = Camera.clamp(this.getX() - (Game.WIDTH / 2), 0, World.WIDTH * 16 - Game.WIDTH);
 		Camera.y = Camera.clamp(this.getY() - (Game.HEIGHT / 2), 0, World.HEIGHT * 16 - Game.HEIGHT);
@@ -93,6 +98,18 @@ public class Player extends Entity {
 
 	}
 
+	public void checkCollisionWithBullet() {
+		for (int i = 0; i < Game.entities.size(); i++) {
+			Entity current = Game.entities.get(i);
+			if (current instanceof Bullet) {
+				if (Entity.isCollinding(this, current)) {
+					this.setAmmo(getAmmo() + ((Bullet) current).getAmmo());
+					Game.entities.remove(current);
+				}
+			}
+		}
+	}
+
 	public void checkCollisionWithLifepack() {
 		for (int i = 0; i < Game.entities.size(); i++) {
 			Entity current = Game.entities.get(i);
@@ -102,6 +119,20 @@ public class Player extends Entity {
 					Game.entities.remove(current);
 				}
 			}
+		}
+	}
+
+	public int getAmmo() {
+		return this.ammo;
+	}
+
+	public void setAmmo(int a) {
+		if (a < 0) {
+			this.ammo = 0;
+		} else if (a >= maxAmmo) {
+			this.ammo = maxAmmo;
+		} else {
+			this.ammo = a;
 		}
 	}
 

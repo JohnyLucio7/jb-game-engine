@@ -137,6 +137,8 @@ public class Game extends Canvas implements Runnable, KeyListener {
 		g = bs.getDrawGraphics();
 		g.drawImage(biImage, 0, 0, WIDTH * SCALE, HEIGHT * SCALE, null); // DESENHO DA IMAGEM NO FRAME
 
+		ui.renderWithoutScale(g);
+
 		bs.show();
 	}
 

@@ -14,11 +14,13 @@ public class UI {
 		g.fillRect(8, 4, 70, 7);
 		g.setColor(Color.green);
 		g.fillRect(8, 4, (int) ((Game.player.getLife() / Game.player.getMaxLife()) * 70), 7);
+	}
+
+	public void renderWithoutScale(Graphics g) {
 		g.setColor(Color.white);
-		g.setFont(new Font("arial", Font.BOLD, 7));
-		// g.drawString((int) Game.player.getLife() + "/" + Game.player.getMaxLife(),
-		// 25, 10);
-		g.drawString(alignHpStr() + "/" + Game.player.getMaxLife(), 25, 10);
+		g.setFont(new Font("arial", Font.BOLD, 20));
+		g.drawString(alignHpStr() + "/" + Game.player.getMaxLife(), 27 * Game.SCALE, 30);
+		g.drawString("Munição " + Game.player.getAmmo(), Game.SCALE * 190, 30);
 	}
 
 	private String alignHpStr() {
