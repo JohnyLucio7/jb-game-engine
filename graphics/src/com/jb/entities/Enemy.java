@@ -14,7 +14,7 @@ public class Enemy extends Entity {
 	private int speed = 1;
 	private boolean enableRectCollisionMask = false;
 	private boolean enableRectCollisionWithPlayer = false;
-	private boolean enableRectBorderColissionWithPlayer = true;
+	private boolean enableRectBorderColissionWithPlayer = false;
 
 	/** Variáveis de Animação */
 
@@ -70,6 +70,7 @@ public class Enemy extends Entity {
 
 			if (Game.rand.nextInt(100) < 10) {
 				Game.player.setLife(Game.player.getLife() - Game.rand.nextInt(3));
+				Game.player.setIsDamaged(true);
 			}
 		}
 
@@ -100,7 +101,7 @@ public class Enemy extends Entity {
 		if (enableRectBorderColissionWithPlayer) {
 			showRectBorderColissionWithPlayer(g);
 		}
-		
+
 	}
 
 	public boolean isCollidingWithPlayer() {
@@ -148,7 +149,7 @@ public class Enemy extends Entity {
 
 	private void showRectBorderColissionWithPlayer(Graphics g) {
 		this.setMask(3, 4, 10, 12);
-		
+
 		g.setColor(new Color(255, 255, 0));
 
 		int[] dx = new int[] { this.getX() + this.getMaskX() - Camera.x,

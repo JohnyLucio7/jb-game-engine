@@ -75,6 +75,19 @@ public class Game extends Canvas implements Runnable, KeyListener {
 		frame.setVisible(true);
 	}
 
+	public void reinitGame() {
+		if (player.getLife() <= 0) {
+			entities.clear();
+			enemies.clear();
+			entities = new ArrayList<Entity>();
+			enemies = new ArrayList<Enemy>();
+			spritesheet = new Spritesheet("/spritesheet.png");
+			player = new Player(0, 0, 16, 16, spritesheet.getSprite(32, 0, 16, 16));
+			entities.add(player);
+			world = new World("/map.png");
+		}
+	}
+
 	/** Método que inicializar a execução da thread */
 	public synchronized void start() {
 		thread = new Thread(this);
@@ -104,6 +117,7 @@ public class Game extends Canvas implements Runnable, KeyListener {
 			Entity e = entities.get(i);
 			e.tick();
 		}
+		reinitGame();
 	}
 
 	public void render() {
