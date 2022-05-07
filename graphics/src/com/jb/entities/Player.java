@@ -71,6 +71,7 @@ public class Player extends Entity {
 		} else {
 			playerAnimSpriteIndex = 0;
 		}
+		checkCollisionWithLifepack();
 
 		Camera.x = Camera.clamp(this.getX() - (Game.WIDTH / 2), 0, World.WIDTH * 16 - Game.WIDTH);
 		Camera.y = Camera.clamp(this.getY() - (Game.HEIGHT / 2), 0, World.HEIGHT * 16 - Game.HEIGHT);
@@ -92,6 +93,18 @@ public class Player extends Entity {
 
 	}
 
+	public void checkCollisionWithLifepack() {
+		for (int i = 0; i < Game.entities.size(); i++) {
+			Entity current = Game.entities.get(i);
+			if (current instanceof Lifepack) {
+				if (Entity.isCollinding(this, current)) {
+					this.setLife(this.getLife() + ((Lifepack) current).getLifePoints());
+					Game.entities.remove(current);
+				}
+			}
+		}
+	}
+
 	public int getMaxLife() {
 		return this.maxLife;
 	}
@@ -102,8 +115,10 @@ public class Player extends Entity {
 
 	public void setLife(double nl) {
 
-		if (this.life <= 0)
+		if (nl <= 0)
 			this.life = 0;
+		else if (nl >= this.maxLife)
+			this.life = maxLife;
 		else
 			this.life = nl;
 

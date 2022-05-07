@@ -12,12 +12,9 @@ import com.jb.world.World;
 public class Enemy extends Entity {
 
 	private int speed = 1;
-	private int maskx = 8;
-	private int masky = 8;
-	private int maskw = 10;
-	private int maskh = 10;
 	private boolean enableRectCollisionMask = false;
 	private boolean enableRectCollisionWithPlayer = false;
+	private boolean enableRectBorderColissionWithPlayer = false;
 
 	/** Variáveis de Animação */
 
@@ -72,18 +69,7 @@ public class Enemy extends Entity {
 			// perto do player
 
 			if (Game.rand.nextInt(100) < 10) {
-
 				Game.player.setLife(Game.player.getLife() - Game.rand.nextInt(3));
-
-//				Game.player.life -= Game.rand.nextInt(3);
-//				if (Game.player.life <= 0) {
-//					// Game over
-//					Game.player.life = 0;
-//					System.out.println("HP: " + Game.player.life + " Game Over!");
-//				} else {
-//					System.out.println("HP: " + Game.player.life);
-//				}
-
 			}
 		}
 
@@ -110,28 +96,33 @@ public class Enemy extends Entity {
 		if (enableRectCollisionWithPlayer) {
 			showRectCollisionWithPlayer(g);
 		}
+
+		if (enableRectBorderColissionWithPlayer) {
+			showRectBorderColissionWithPlayer(g);
+		}
 	}
 
 	public boolean isCollidingWithPlayer() {
-		int maskxe = 3;
-		int maskye = 4;
-		int maskwe = 10;
-		int maskhe = 12;
-		Rectangle enemyCurrent = new Rectangle(this.getX() + maskxe, this.getY() + maskye, maskwe, maskhe);
+		this.setMask(3, 4, 10, 12);
+		Rectangle enemyCurrent = new Rectangle(this.getX() + this.getMaskX(), this.getY() + this.getMaskY(),
+				this.getMaskW(), this.getMaskH());
 		Rectangle player = new Rectangle(Game.player.getX(), Game.player.getY(), 16, 16);
 
 		return enemyCurrent.intersects(player);
 	}
 
 	public boolean isColliding(int xnext, int ynext) {
-		Rectangle enemyCurrent = new Rectangle(xnext + maskx, ynext + masky, maskw, maskh);
+		this.setMask(8, 8, 10, 10);
+		Rectangle enemyCurrent = new Rectangle(xnext + this.getMaskX(), ynext + this.getMaskY(), this.getMaskW(),
+				this.getMaskH());
 
 		for (int i = 0; i < Game.enemies.size(); i++) {
 			Enemy e = Game.enemies.get(i);
 			if (e == this)
 				continue;
 
-			Rectangle enemyTarget = new Rectangle(e.getX() + maskx, e.getY() + masky, maskw, maskh);
+			Rectangle enemyTarget = new Rectangle(e.getX() + this.getMaskX(), e.getY() + this.getMaskY(),
+					this.getMaskW(), this.getMaskH());
 
 			if (enemyCurrent.intersects(enemyTarget))
 				return true;
@@ -141,17 +132,32 @@ public class Enemy extends Entity {
 	}
 
 	private void showRectCollisionMask(Graphics g) {
+		this.setMask(8, 8, 10, 10);
 		g.setColor(new Color(0, 0, 255, 100));
-		g.fillRect(this.getX() + maskx - Camera.x, this.getY() + masky - Camera.y, maskw, maskh);
+		g.fillRect(this.getX() + this.getMaskX() - Camera.x, this.getY() + this.getMaskY() - Camera.y, this.getMaskW(),
+				this.getMaskH());
 	}
 
 	private void showRectCollisionWithPlayer(Graphics g) {
-		int maskxe = 3;
-		int maskye = 4;
-		int maskwe = 10;
-		int maskhe = 12;
+		this.setMask(3, 4, 10, 12);
 		g.setColor(new Color(0, 0, 255, 100));
-		g.fillRect(this.getX() + maskxe - Camera.x, this.getY() + maskye - Camera.y, maskwe, maskhe);
+		g.fillRect(this.getX() + this.getMaskX() - Camera.x, this.getY() + this.getMaskY() - Camera.y, this.getMaskW(),
+				this.getMaskH());
+	}
+
+	private void showRectBorderColissionWithPlayer(Graphics g) {
+		this.setMask(3, 4, 10, 12);
+		
+		g.setColor(new Color(255, 255, 0));
+
+		int[] dx = new int[] { this.getX() + this.getMaskX() - Camera.x,
+				this.getX() + this.getMaskX() + this.getMaskW() - Camera.x,
+				this.getX() + this.getMaskX() + this.getMaskW() - Camera.x, this.getX() + this.getMaskX() - Camera.x };
+
+		int[] dy = new int[] { this.getY() + this.getMaskY() - Camera.y, this.getY() + this.getMaskY() - Camera.y,
+				this.getY() + this.getMaskY() + this.getMaskH() - Camera.y,
+				this.getY() + this.getMaskY() + this.getMaskH() - Camera.y };
+		g.drawPolygon(dx, dy, 4);
 	}
 
 }
