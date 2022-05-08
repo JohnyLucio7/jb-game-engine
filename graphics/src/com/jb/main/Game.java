@@ -6,6 +6,8 @@ import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 import java.awt.image.BufferStrategy;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
@@ -30,7 +32,7 @@ import com.jb.world.World;
  * 
  * @author Johny Lúcio: BTI/IMD - N - 20200039648 - UFRN.
  */
-public class Game extends Canvas implements Runnable, KeyListener {
+public class Game extends Canvas implements Runnable, KeyListener, MouseListener {
 
 	private static final long serialVersionUID = 1L;
 	private boolean isRunning = true;
@@ -52,6 +54,7 @@ public class Game extends Canvas implements Runnable, KeyListener {
 
 	public Game() {
 		this.addKeyListener(this);
+		this.addMouseListener(this);
 		this.setFocusable(true); // estabelece este canvas no 1º plano
 		this.setPreferredSize(new Dimension(WIDTH * SCALE, HEIGHT * SCALE));
 		initFrame();
@@ -244,6 +247,40 @@ public class Game extends Canvas implements Runnable, KeyListener {
 		} else if (e.getKeyCode() == KeyEvent.VK_DOWN || e.getKeyCode() == KeyEvent.VK_S) {
 			player.setDown(false);
 		}
+
+	}
+
+	@Override
+	public void mouseClicked(MouseEvent e) {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void mousePressed(MouseEvent e) {
+		if (Game.player.getHasGun() && Game.player.getWeapon().getAmmoInClip() > 0) {
+			player.setIsMouseShoot(true);
+		}
+		player.setMouseX((e.getX() / SCALE));
+		player.setMouseY((e.getY() / SCALE));
+		System.out.println("X: " + player.getMouseX() + " Y: " + player.getMouseY());
+	}
+
+	@Override
+	public void mouseReleased(MouseEvent e) {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void mouseEntered(MouseEvent e) {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void mouseExited(MouseEvent e) {
+		// TODO Auto-generated method stub
 
 	}
 }

@@ -14,6 +14,8 @@ public class Player extends Entity {
 	private int dir = 0; // substituir por enum
 	private int dir_left = 1;
 	private int dir_right = 0;
+	private int mouseX;
+	private int mouseY;
 	private int playerAnimFrames = 0;
 	private int playerAnimeMaxFrames = 5;
 	private int playerAnimSpriteIndex = 0;
@@ -27,6 +29,7 @@ public class Player extends Entity {
 	private boolean isMoved = false;
 	private boolean isDamaged = false;
 	private boolean isShoot = false;
+	private boolean isMouseShoot = false;
 	private boolean hasGun = false;
 	private boolean enableRectCollisionMask = false;
 	private boolean enableRectBorderCollisionMask = false;
@@ -143,6 +146,25 @@ public class Player extends Entity {
 			bullet.setPosYOffset(5);
 			Game.bulletshoot.add(bullet);
 		}
+
+		if (isMouseShoot && hasGun && weapon.getAmmoInClip() > 0) {
+			weapon.setAmmoInClip(weapon.getAmmoInClip() - 1);
+			setIsMouseShoot(false);
+
+			double angle = Math.atan2(this.getMouseY() - (this.getY() + 8 - Camera.y),
+					this.getMouseX() - (this.getX() + 8 - Camera.x));
+
+			System.out.println(angle);
+
+			double dx = Math.cos(angle);
+			double dy = Math.sin(angle);
+
+			Bulletshoot bullet = new Bulletshoot(getX(), getY(), 3, 3, null, dx, dy);
+			bullet.setPosXOffset(22);
+			bullet.setPosYOffset(5);
+			Game.bulletshoot.add(bullet);
+
+		}
 	}
 
 	public void render(Graphics g) {
@@ -246,6 +268,30 @@ public class Player extends Entity {
 				}
 			}
 		}
+	}
+
+	public int getMouseX() {
+		return mouseX;
+	}
+
+	public void setMouseX(int mouseX) {
+		this.mouseX = mouseX;
+	}
+
+	public int getMouseY() {
+		return mouseY;
+	}
+
+	public void setMouseY(int mouseY) {
+		this.mouseY = mouseY;
+	}
+
+	public boolean getIsMouseShoot() {
+		return this.isMouseShoot;
+	}
+
+	public void setIsMouseShoot(boolean b) {
+		this.isMouseShoot = b;
 	}
 
 	public Weapon getWeapon() {

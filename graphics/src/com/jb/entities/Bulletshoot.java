@@ -13,11 +13,11 @@ public class Bulletshoot extends Entity {
 	private int LimitTimeLife;
 	private int posXOffset;
 	private int posYOffset;
-	private int dirX;
-	private int dirY;
+	private double dirX;
+	private double dirY;
 	private double speed;
 
-	public Bulletshoot(int x, int y, int width, int height, BufferedImage sprite, int dirX, int dirY) {
+	public Bulletshoot(int x, int y, int width, int height, BufferedImage sprite, double dirX, double dirY) {
 		super(x, y, width, height, sprite);
 
 		this.dirX = dirX;
@@ -31,8 +31,8 @@ public class Bulletshoot extends Entity {
 	}
 
 	public void tick() {
-		setX(getX() + (dirX * (int) speed));
-		setY(getY() + (dirY * (int) speed));
+		setX(getX() + (int) (dirX * speed));
+		setY(getY() + (int) (dirY * speed));
 		CurrTimeLife++;
 		if (CurrTimeLife == LimitTimeLife) {
 			Game.bulletshoot.remove(this);
@@ -40,9 +40,12 @@ public class Bulletshoot extends Entity {
 		}
 	}
 
+	public void setX(double b) {
+	}
+
 	public void render(Graphics g) {
 		g.setColor(Color.YELLOW);
-		g.fillOval(getX() + getPosXOffset() - Camera.x, getY() + getPosYOffset() - Camera.y, this.getWidth(),
+		g.fillOval(this.getX() + getPosXOffset() - Camera.x, this.getY() + getPosYOffset() - Camera.y, this.getWidth(),
 				this.getHeight());
 	}
 
