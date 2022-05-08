@@ -14,6 +14,7 @@ import java.util.Random;
 
 import javax.swing.JFrame;
 
+import com.jb.entities.Bulletshoot;
 import com.jb.entities.Enemy;
 import com.jb.entities.Entity;
 import com.jb.entities.Player;
@@ -42,6 +43,7 @@ public class Game extends Canvas implements Runnable, KeyListener {
 	public static JFrame frame;
 	public static List<Entity> entities;
 	public static List<Enemy> enemies;
+	public static List<Bulletshoot> bulletshoot;
 	public static Spritesheet spritesheet;
 	public static World world;
 	public static Player player;
@@ -58,6 +60,7 @@ public class Game extends Canvas implements Runnable, KeyListener {
 		biImage = new BufferedImage(WIDTH, HEIGHT, BufferedImage.TYPE_INT_RGB);
 		entities = new ArrayList<Entity>();
 		enemies = new ArrayList<Enemy>();
+		bulletshoot = new ArrayList<Bulletshoot>();
 		spritesheet = new Spritesheet("/spritesheet.png");
 		player = new Player(0, 0, 16, 16, spritesheet.getSprite(32, 0, 16, 16));
 		entities.add(player);
@@ -117,7 +120,12 @@ public class Game extends Canvas implements Runnable, KeyListener {
 			Entity e = entities.get(i);
 			e.tick();
 		}
-		reinitGame();
+
+		for (int i = 0; i < bulletshoot.size(); i++) {
+			bulletshoot.get(i).tick();
+		}
+
+		// reinitGame();
 	}
 
 	public void render() {
@@ -141,6 +149,9 @@ public class Game extends Canvas implements Runnable, KeyListener {
 		for (int i = 0; i < entities.size(); i++) {
 			Entity e = entities.get(i);
 			e.render(g);
+		}
+		for (int i = 0; i < bulletshoot.size(); i++) {
+			bulletshoot.get(i).render(g);
 		}
 
 		ui.render(g);
@@ -207,6 +218,15 @@ public class Game extends Canvas implements Runnable, KeyListener {
 			player.setUp(true);
 		} else if (e.getKeyCode() == KeyEvent.VK_DOWN || e.getKeyCode() == KeyEvent.VK_S) {
 			player.setDown(true);
+		}
+
+		if (e.getKeyCode() == KeyEvent.VK_CONTROL && Game.player.getHasGun()
+				&& Game.player.getWeapon().getAmmoInClip() > 0) {
+			player.setIsShoot(true);
+		}
+
+		if (e.getKeyCode() == KeyEvent.VK_R && Game.player.getHasGun()) {
+			Game.player.getWeapon().reload(Game.player.getAmmo());
 		}
 
 	}

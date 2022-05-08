@@ -26,6 +26,7 @@ public class Player extends Entity {
 	private boolean left;
 	private boolean isMoved = false;
 	private boolean isDamaged = false;
+	private boolean isShoot = false;
 	private boolean hasGun = false;
 	private boolean enableRectCollisionMask = false;
 	private boolean enableRectBorderCollisionMask = false;
@@ -122,6 +123,25 @@ public class Player extends Entity {
 			if (playerAnimIsDamagedFrames == 0) {
 				setIsDamaged(false);
 			}
+		}
+
+		if (isShoot && hasGun && weapon.getAmmoInClip() > 0) {
+
+			weapon.setAmmoInClip(weapon.getAmmoInClip() - 1);
+			setIsShoot(false);
+
+			int dx;
+
+			if (dir == dir_right) {
+				dx = 1;
+			} else {
+				dx = -1;
+			}
+
+			Bulletshoot bullet = new Bulletshoot(getX(), getY(), 3, 3, null, dx, 0);
+			bullet.setPosXOffset((dx == 1) ? 22 : -10);
+			bullet.setPosYOffset(5);
+			Game.bulletshoot.add(bullet);
 		}
 	}
 
@@ -228,10 +248,23 @@ public class Player extends Entity {
 		}
 	}
 
+	public Weapon getWeapon() {
+		return this.weapon;
+	}
+
+	public boolean getIsShoot() {
+		return this.isShoot;
+	}
+
+	public void setIsShoot(boolean b) {
+		this.isShoot = b;
+	}
+
 	public int getWeaponAmmoInClip() {
 		if (weapon == null)
 			return 0;
-		else return this.weapon.getAmmoInClip();
+		else
+			return this.weapon.getAmmoInClip();
 	}
 
 	public boolean getHasGun() {
