@@ -26,6 +26,7 @@ public class Player extends Entity {
 	private boolean left;
 	private boolean isMoved = false;
 	private boolean isDamaged = false;
+	private boolean hasGun = false;
 	private boolean enableRectCollisionMask = false;
 	private boolean enableRectBorderCollisionMask = false;
 
@@ -33,12 +34,20 @@ public class Player extends Entity {
 	private BufferedImage[] playerRight;
 	private BufferedImage[] playerLeftDamage;
 	private BufferedImage[] playerRightDamage;
+	private BufferedImage[] gunLeft;
+	private BufferedImage[] gunRight;
+	private BufferedImage[] gunLeftDamage;
+	private BufferedImage[] gunRightDamage;
 
 	private double life = 100;
 	private int maxLife = 100;
 
 	private int ammo = 0;
-	private int maxAmmo = 18;
+	private int maxAmmo = 30;
+	private int weaponXOffset = 0;
+	private int weaponYOffset = 0;
+
+	private Weapon weapon;
 
 	public Player(int x, int y, int width, int height, BufferedImage sprite) {
 		super(x, y, width, height, sprite);
@@ -48,11 +57,22 @@ public class Player extends Entity {
 		playerLeftDamage = new BufferedImage[4];
 		playerRightDamage = new BufferedImage[4];
 
+		gunLeft = new BufferedImage[4];
+		gunRight = new BufferedImage[4];
+		gunLeftDamage = new BufferedImage[4];
+		gunRightDamage = new BufferedImage[4];
+
 		for (int i = 0; i < 4; i++) {
 			playerRight[i] = Game.spritesheet.getSprite(32 + (i * 16), 0, width, height);
 			playerLeft[i] = Game.spritesheet.getSprite(32 + (i * 16), 16, width, height);
 			playerRightDamage[i] = Game.spritesheet.getSprite(32 + (i * 16), 32, width, height);
 			playerLeftDamage[i] = Game.spritesheet.getSprite(32 + (i * 16), 48, width, height);
+
+			gunRight[i] = Game.spritesheet.getSprite(96 + (i * 16), 0, width, height);
+			gunLeft[i] = Game.spritesheet.getSprite(96 + (i * 16), 16, width, height);
+			gunRightDamage[i] = Game.spritesheet.getSprite(96 + (i * 16), 32, width, height);
+			gunLeftDamage[i] = Game.spritesheet.getSprite(96 + (i * 16), 48, width, height);
+
 		}
 	}
 
@@ -91,6 +111,7 @@ public class Player extends Entity {
 
 		checkCollisionWithLifepack();
 		checkCollisionWithBullet();
+		checkCollisionWithWeapon();
 
 		Camera.x = Camera.clamp(this.getX() - (Game.WIDTH / 2), 0, World.WIDTH * 16 - Game.WIDTH);
 		Camera.y = Camera.clamp(this.getY() - (Game.HEIGHT / 2), 0, World.HEIGHT * 16 - Game.HEIGHT);
@@ -109,16 +130,36 @@ public class Player extends Entity {
 		if (!isDamaged) {
 			if (dir == dir_right) {
 				g.drawImage(playerRight[playerAnimSpriteIndex], this.getX() - Camera.x, this.getY() - Camera.y, null);
+				if (hasGun) {
+					this.setWeaponXOffset(9);
+					g.drawImage(gunRight[playerAnimSpriteIndex], this.getX() + getWeaponXOffset() - Camera.x,
+							this.getY() + getWeaponYOffset() - Camera.y, null);
+				}
 			} else if (dir == dir_left) {
 				g.drawImage(playerLeft[playerAnimSpriteIndex], this.getX() - Camera.x, this.getY() - Camera.y, null);
+				if (hasGun) {
+					this.setWeaponXOffset(-9);
+					g.drawImage(gunLeft[playerAnimSpriteIndex], this.getX() + getWeaponXOffset() - Camera.x,
+							this.getY() + getWeaponYOffset() - Camera.y, null);
+				}
 			}
 		} else {
 			if (dir == dir_right) {
 				g.drawImage(playerRightDamage[playerAnimSpriteIndex], this.getX() - Camera.x, this.getY() - Camera.y,
 						null);
+				if (hasGun) {
+					this.setWeaponXOffset(9);
+					g.drawImage(gunRightDamage[playerAnimSpriteIndex], this.getX() + getWeaponXOffset() - Camera.x,
+							this.getY() + getWeaponYOffset() - Camera.y, null);
+				}
 			} else if (dir == dir_left) {
 				g.drawImage(playerLeftDamage[playerAnimSpriteIndex], this.getX() - Camera.x, this.getY() - Camera.y,
 						null);
+				if (hasGun) {
+					this.setWeaponXOffset(-9);
+					g.drawImage(gunLeftDamage[playerAnimSpriteIndex], this.getX() + getWeaponXOffset() - Camera.x,
+							this.getY() + getWeaponYOffset() - Camera.y, null);
+				}
 			}
 		}
 
@@ -150,6 +191,19 @@ public class Player extends Entity {
 		g.drawPolygon(dx, dy, 4);
 	}
 
+	public void checkCollisionWithWeapon() {
+		for (int i = 0; i < Game.entities.size(); i++) {
+			Entity current = Game.entities.get(i);
+			if (current instanceof Weapon) {
+				if (Entity.isCollinding(this, current)) {
+					weapon = (Weapon) current;
+					hasGun = true;
+					Game.entities.remove(current);
+				}
+			}
+		}
+	}
+
 	public void checkCollisionWithBullet() {
 		for (int i = 0; i < Game.entities.size(); i++) {
 			Entity current = Game.entities.get(i);
@@ -172,6 +226,32 @@ public class Player extends Entity {
 				}
 			}
 		}
+	}
+
+	public int getWeaponAmmoInClip() {
+		if (weapon == null)
+			return 0;
+		else return this.weapon.getAmmoInClip();
+	}
+
+	public boolean getHasGun() {
+		return this.hasGun;
+	}
+
+	public int getWeaponXOffset() {
+		return this.weaponXOffset;
+	}
+
+	public void setWeaponXOffset(int offset) {
+		this.weaponXOffset = offset;
+	}
+
+	public int getWeaponYOffset() {
+		return this.weaponYOffset;
+	}
+
+	public void setWeaponYOffset(int offset) {
+		this.weaponYOffset = offset;
 	}
 
 	public boolean getIsDamaged() {

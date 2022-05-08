@@ -32,21 +32,21 @@ import com.jb.world.World;
 public class Game extends Canvas implements Runnable, KeyListener {
 
 	private static final long serialVersionUID = 1L;
-	public static JFrame frame;
-	private Thread thread;
 	private boolean isRunning = true;
 	public static final int WIDTH = 240; // 240
 	public static final int HEIGHT = 160; // 160
 	public static final int SCALE = 3;
-	private final double FPS = 60.0;
+	private static final double FPS = 60.0;
+	private Thread thread;
 	private BufferedImage biImage;
+	public static JFrame frame;
 	public static List<Entity> entities;
 	public static List<Enemy> enemies;
 	public static Spritesheet spritesheet;
 	public static World world;
 	public static Player player;
 	public static Random rand;
-	public UI ui;
+	public static UI ui;
 
 	public Game() {
 		this.addKeyListener(this);

@@ -20,7 +20,8 @@ public class UI {
 		g.setColor(Color.white);
 		g.setFont(new Font("arial", Font.BOLD, 20));
 		g.drawString(alignHpStr() + "/" + Game.player.getMaxLife(), 27 * Game.SCALE, 30);
-		g.drawString("Munição " + Game.player.getAmmo(), Game.SCALE * 190, 30);
+		g.drawString("Munição " + Game.player.getWeaponAmmoInClip() + "/" + Game.player.getAmmo(), Game.SCALE * 185,
+				30);
 	}
 
 	private String alignHpStr() {
