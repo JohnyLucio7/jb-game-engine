@@ -11,6 +11,9 @@ import com.jb.world.World;
 
 public class Enemy extends Entity {
 
+	private int life = 2;
+	private int maxLife = 10;
+
 	private int speed = 1;
 	private boolean enableRectCollisionMask = false;
 	private boolean enableRectCollisionWithPlayer = false;
@@ -81,6 +84,12 @@ public class Enemy extends Entity {
 		enemyAnimFrames %= enemyAnimeMaxFrames;
 		enemyAnimFrames++;
 
+		isCollidingWithBullet();
+
+		if (this.life <= 0) {
+			destroySelf();
+		}
+
 	}
 
 	public void render(Graphics g) {
@@ -100,6 +109,25 @@ public class Enemy extends Entity {
 
 		if (enableRectBorderColissionWithPlayer) {
 			showRectBorderColissionWithPlayer(g);
+		}
+
+	}
+
+	public void destroySelf() {
+		Game.enemies.remove(this);
+		Game.entities.remove(this);
+	}
+
+	public void isCollidingWithBullet() {
+		for (int i = 0; i < Game.bulletshoot.size(); i++) {
+			Entity e = Game.bulletshoot.get(i);
+			if (e instanceof Bulletshoot) {
+				if (Entity.isCollinding(this, e)) {
+					this.setLife(this.getLife() - 1);
+					Game.bulletshoot.remove(i);
+					return;
+				}
+			}
 		}
 
 	}
@@ -160,6 +188,29 @@ public class Enemy extends Entity {
 				this.getY() + this.getMaskY() + this.getMaskH() - Camera.y,
 				this.getY() + this.getMaskY() + this.getMaskH() - Camera.y };
 		g.drawPolygon(dx, dy, 4);
+	}
+
+	public int getLife() {
+		return life;
+	}
+
+	public void setLife(int life) {
+		if (life <= 0)
+			this.life = 0;
+		else if (life >= this.maxLife)
+			this.life = maxLife;
+		else
+			this.life = life;
+	}
+
+	public int getMaxLife() {
+		return maxLife;
+	}
+
+	public void setMaxLife(int maxLife) {
+		if (maxLife > 0) {
+			this.maxLife = maxLife;
+		}
 	}
 
 }
