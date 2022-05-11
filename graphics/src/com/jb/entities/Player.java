@@ -6,22 +6,33 @@ import java.awt.image.BufferedImage;
 
 import com.jb.main.Game;
 import com.jb.world.Camera;
+import com.jb.world.Direction;
 import com.jb.world.World;
 
 public class Player extends Entity {
 
+	/** player attributes */
+
+	private double life = 100;
+	private int maxLife = 100;
 	private int speed = 1;
-	private int dir = 0; // substituir por enum
-	private int dir_left = 1;
-	private int dir_right = 0;
+	private Direction direction = Direction.RIGHT;
+
+	/** mouse */
 	private int mouseX;
 	private int mouseY;
+
+	/** animation variables */
+
 	private int playerAnimFrames = 0;
 	private int playerAnimeMaxFrames = 5;
 	private int playerAnimSpriteIndex = 0;
 	private int playerAnimeMaxSpriteIndex = 4;
 	private int playerAnimIsDamagedFrames = 0;
 	private int playerAnimMaxIsDamagedFrames = 8;
+
+	/** control booleans */
+
 	private boolean up;
 	private boolean down;
 	private boolean right;
@@ -34,6 +45,8 @@ public class Player extends Entity {
 	private boolean enableRectCollisionMask = false;
 	private boolean enableRectBorderCollisionMask = false;
 
+	/** image vectors */
+
 	private BufferedImage[] playerLeft;
 	private BufferedImage[] playerRight;
 	private BufferedImage[] playerLeftDamage;
@@ -43,15 +56,12 @@ public class Player extends Entity {
 	private BufferedImage[] gunLeftDamage;
 	private BufferedImage[] gunRightDamage;
 
-	private double life = 100;
-	private int maxLife = 100;
-
+	/** weapons configuration */
+	private Weapon weapon;
 	private int ammo = 0;
-	private int maxAmmo = 30;
+	private int maxAmmo = 72;
 	private int weaponXOffset = 0;
 	private int weaponYOffset = 0;
-
-	private Weapon weapon;
 
 	public Player(int x, int y, int width, int height, BufferedImage sprite) {
 		super(x, y, width, height, sprite);
@@ -86,11 +96,11 @@ public class Player extends Entity {
 
 		if (right && World.isFree(this.getX() + speed, this.getY())) {
 			isMoved = true;
-			dir = dir_right;
+			direction = Direction.RIGHT;
 			setX(getX() + speed);
 		} else if (left && World.isFree(this.getX() - speed, this.getY())) {
 			isMoved = true;
-			dir = dir_left;
+			direction = Direction.LEFT;
 			setX(getX() - speed);
 		}
 
@@ -135,14 +145,14 @@ public class Player extends Entity {
 
 			int dx;
 
-			if (dir == dir_right) {
+			if (direction == Direction.RIGHT) {
 				dx = 1;
 			} else {
 				dx = -1;
 			}
 
 			Bulletshoot bullet = new Bulletshoot(getX(), getY(), 3, 3, null, dx, 0);
-			bullet.setPosXOffset((dx == 1) ? 22 : -10);
+			bullet.setPosXOffset((direction == Direction.RIGHT) ? 22 : -10);
 			bullet.setPosYOffset(5);
 			Game.bulletshoot.add(bullet);
 		}
@@ -154,13 +164,16 @@ public class Player extends Entity {
 			double angle = Math.atan2(this.getMouseY() - (this.getY() + 8 - Camera.y),
 					this.getMouseX() - (this.getX() + 8 - Camera.x));
 
-			System.out.println(angle);
+			System.out.println(Math.toDegrees(angle));
+
+			direction = ((Math.toDegrees(angle) <= 90.0) && (Math.toDegrees(angle) >= -90.0)) ? Direction.RIGHT
+					: Direction.LEFT;
 
 			double dx = Math.cos(angle);
 			double dy = Math.sin(angle);
 
 			Bulletshoot bullet = new Bulletshoot(getX(), getY(), 3, 3, null, dx, dy);
-			bullet.setPosXOffset(22);
+			bullet.setPosXOffset((direction == Direction.RIGHT) ? 22 : -10);
 			bullet.setPosYOffset(5);
 			Game.bulletshoot.add(bullet);
 
@@ -170,14 +183,14 @@ public class Player extends Entity {
 	public void render(Graphics g) {
 
 		if (!isDamaged) {
-			if (dir == dir_right) {
+			if (direction == Direction.RIGHT) {
 				g.drawImage(playerRight[playerAnimSpriteIndex], this.getX() - Camera.x, this.getY() - Camera.y, null);
 				if (hasGun) {
 					this.setWeaponXOffset(9);
 					g.drawImage(gunRight[playerAnimSpriteIndex], this.getX() + getWeaponXOffset() - Camera.x,
 							this.getY() + getWeaponYOffset() - Camera.y, null);
 				}
-			} else if (dir == dir_left) {
+			} else if (direction == Direction.LEFT) {
 				g.drawImage(playerLeft[playerAnimSpriteIndex], this.getX() - Camera.x, this.getY() - Camera.y, null);
 				if (hasGun) {
 					this.setWeaponXOffset(-9);
@@ -186,7 +199,7 @@ public class Player extends Entity {
 				}
 			}
 		} else {
-			if (dir == dir_right) {
+			if (direction == Direction.RIGHT) {
 				g.drawImage(playerRightDamage[playerAnimSpriteIndex], this.getX() - Camera.x, this.getY() - Camera.y,
 						null);
 				if (hasGun) {
@@ -194,7 +207,7 @@ public class Player extends Entity {
 					g.drawImage(gunRightDamage[playerAnimSpriteIndex], this.getX() + getWeaponXOffset() - Camera.x,
 							this.getY() + getWeaponYOffset() - Camera.y, null);
 				}
-			} else if (dir == dir_left) {
+			} else if (direction == Direction.LEFT) {
 				g.drawImage(playerLeftDamage[playerAnimSpriteIndex], this.getX() - Camera.x, this.getY() - Camera.y,
 						null);
 				if (hasGun) {
@@ -269,6 +282,8 @@ public class Player extends Entity {
 			}
 		}
 	}
+
+	/** getters and setters */
 
 	public int getMouseX() {
 		return mouseX;

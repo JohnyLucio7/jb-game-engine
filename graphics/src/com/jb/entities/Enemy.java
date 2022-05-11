@@ -7,37 +7,58 @@ import java.awt.image.BufferedImage;
 
 import com.jb.main.Game;
 import com.jb.world.Camera;
+import com.jb.world.Direction;
 import com.jb.world.World;
 
 public class Enemy extends Entity {
 
-	private int life = 2;
-	private int maxLife = 10;
+	/** enemy attributes */
 
+	private int life = 10;
+	private int maxLife = 10;
 	private int speed = 1;
+	private Direction direction = Direction.RIGHT;
+
+	/** collision and information rendering */
+
+	private boolean enableShowLife = true;
 	private boolean enableRectCollisionMask = false;
 	private boolean enableRectCollisionWithPlayer = false;
 	private boolean enableRectBorderColissionWithPlayer = false;
 
-	/** Variáveis de Animação */
+	/** control booleans */
+
+	private boolean isDamaged = false;
+
+	/** animation variables */
 
 	private int enemyAnimFrames = 0;
 	private int enemyAnimeMaxFrames = 5;
 	private int enemyAnimSpriteIndex = 0;
 	private int enemyAnimeMaxSpriteIndex = 4;
+	private int enemyAnimIsDamagedFrames = 0;
+	private int enemyAnimMaxIsDamagedFrames = 8;
+
+	/** image vectors */
+
 	private BufferedImage[] enemyLeft;
 	private BufferedImage[] enemyRight;
-	private int dir = 0, dir_left = 1, dir_right = 0; // substituir por enum
+	private BufferedImage[] enemyLeftDamage;
+	private BufferedImage[] enemyRightDamage;
 
 	public Enemy(int x, int y, int width, int height, BufferedImage sprite) {
 		super(x, y, width, height, null);
 
 		enemyRight = new BufferedImage[4];
 		enemyLeft = new BufferedImage[4];
+		enemyRightDamage = new BufferedImage[4];
+		enemyLeftDamage = new BufferedImage[4];
 
 		for (int i = 0; i < 4; i++) {
 			enemyRight[i] = Game.spritesheet.getSprite(32 + (i * 16), 64, width, height);
 			enemyLeft[i] = Game.spritesheet.getSprite(32 + (i * 16), 80, width, height);
+			enemyRightDamage[i] = Game.spritesheet.getSprite(32 + (i * 16), 96, width, height);
+			enemyLeftDamage[i] = Game.spritesheet.getSprite(32 + (i * 16), 112, width, height);
 		}
 	}
 
@@ -50,12 +71,12 @@ public class Enemy extends Entity {
 						&& !isColliding(this.getX() + speed, this.getY())) {
 					//
 					this.setX(this.getX() + speed);
-					dir = dir_right;
+					direction = Direction.RIGHT;
 				} else if (this.getX() > Game.player.getX() && World.isFree(this.getX() - speed, this.getY())
 						&& !isColliding(this.getX() - speed, this.getY())) {
 					//
 					this.setX(this.getX() - speed);
-					dir = dir_left;
+					direction = Direction.LEFT;
 				}
 
 				if (this.getY() < Game.player.getY() && World.isFree(this.getX(), this.getY() + speed)
@@ -84,33 +105,55 @@ public class Enemy extends Entity {
 		enemyAnimFrames %= enemyAnimeMaxFrames;
 		enemyAnimFrames++;
 
-		isCollidingWithBullet();
+		this.isCollidingWithBullet();
 
-		if (this.life <= 0) {
+		if (this.getLife() <= 0) {
 			destroySelf();
+		}
+
+		if (this.getIsDamaged()) {
+			enemyAnimIsDamagedFrames++;
+			enemyAnimIsDamagedFrames %= enemyAnimMaxIsDamagedFrames;
+			if (enemyAnimIsDamagedFrames == 0) {
+				this.setIsDamaged(false);
+			}
 		}
 
 	}
 
 	public void render(Graphics g) {
-		if (dir == dir_right) {
-			g.drawImage(enemyRight[enemyAnimSpriteIndex], this.getX() - Camera.x, this.getY() - Camera.y, null);
-		} else if (dir == dir_left) {
-			g.drawImage(enemyLeft[enemyAnimSpriteIndex], this.getX() - Camera.x, this.getY() - Camera.y, null);
+
+		if (!this.getIsDamaged()) {
+			if (direction == Direction.RIGHT) {
+				g.drawImage(enemyRight[enemyAnimSpriteIndex], this.getX() - Camera.x, this.getY() - Camera.y, null);
+			} else if (direction == Direction.LEFT) {
+				g.drawImage(enemyLeft[enemyAnimSpriteIndex], this.getX() - Camera.x, this.getY() - Camera.y, null);
+			}
+		} else {
+			if (direction == Direction.RIGHT) {
+				g.drawImage(enemyRightDamage[enemyAnimSpriteIndex], this.getX() - Camera.x, this.getY() - Camera.y,
+						null);
+			} else if (direction == Direction.LEFT) {
+				g.drawImage(enemyLeftDamage[enemyAnimSpriteIndex], this.getX() - Camera.x, this.getY() - Camera.y,
+						null);
+			}
 		}
 
 		if (enableRectCollisionMask) {
-			showRectCollisionMask(g);
+			this.showRectCollisionMask(g);
 		}
 
 		if (enableRectCollisionWithPlayer) {
-			showRectCollisionWithPlayer(g);
+			this.showRectCollisionWithPlayer(g);
 		}
 
 		if (enableRectBorderColissionWithPlayer) {
-			showRectBorderColissionWithPlayer(g);
+			this.showRectBorderColissionWithPlayer(g);
 		}
 
+		if (enableShowLife) {
+			this.showLife(g);
+		}
 	}
 
 	public void destroySelf() {
@@ -118,18 +161,30 @@ public class Enemy extends Entity {
 		Game.entities.remove(this);
 	}
 
+	private void showLife(Graphics g) {
+
+		g.setColor(Color.black);
+		setMask(3, -1, 10, 12);
+		g.fillRect(getX() + getMaskX() - Camera.x, getY() + getMaskY() - Camera.y, 10, 4);
+		g.setColor(Color.green);
+		setMask(4, 0, 10, 12);
+		double currentLife = life;
+		g.fillRect(getX() + getMaskX() - Camera.x, getY() + getMaskY() - Camera.y, (int) (currentLife / maxLife * 8),
+				2);
+	}
+
 	public void isCollidingWithBullet() {
 		for (int i = 0; i < Game.bulletshoot.size(); i++) {
 			Entity e = Game.bulletshoot.get(i);
 			if (e instanceof Bulletshoot) {
 				if (Entity.isCollinding(this, e)) {
+					this.setIsDamaged(true);
 					this.setLife(this.getLife() - 1);
 					Game.bulletshoot.remove(i);
 					return;
 				}
 			}
 		}
-
 	}
 
 	public boolean isCollidingWithPlayer() {
@@ -190,6 +245,8 @@ public class Enemy extends Entity {
 		g.drawPolygon(dx, dy, 4);
 	}
 
+	/** getters and setters */
+
 	public int getLife() {
 		return life;
 	}
@@ -211,6 +268,14 @@ public class Enemy extends Entity {
 		if (maxLife > 0) {
 			this.maxLife = maxLife;
 		}
+	}
+
+	public boolean getIsDamaged() {
+		return isDamaged;
+	}
+
+	public void setIsDamaged(boolean isDamaged) {
+		this.isDamaged = isDamaged;
 	}
 
 }

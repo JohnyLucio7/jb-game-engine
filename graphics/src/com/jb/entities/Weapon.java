@@ -12,7 +12,7 @@ public class Weapon extends Entity {
 	public Weapon(int x, int y, int width, int height, BufferedImage sprite) {
 		super(x, y, width, height, sprite);
 
-		this.ammoInClip = 300;
+		this.ammoInClip = 6;
 		this.maxAmmoInClip = 6;
 
 	}
