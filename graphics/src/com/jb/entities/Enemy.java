@@ -29,6 +29,7 @@ public class Enemy extends Entity {
 	/** control booleans */
 
 	private boolean isDamaged = false;
+	private boolean isDead = false;
 
 	/** animation variables */
 
@@ -38,6 +39,10 @@ public class Enemy extends Entity {
 	private int enemyAnimeMaxSpriteIndex = 4;
 	private int enemyAnimIsDamagedFrames = 0;
 	private int enemyAnimMaxIsDamagedFrames = 8;
+	private int enemyAnimDeathIndex = 0;
+	private int enemyAnimDeathMaxIndex = 8;
+	private int enemyAnimDeathIndexFrames = 0;
+	private int enemyAnimDeathIndexMaxFrames = 5;
 
 	/** image vectors */
 
@@ -45,6 +50,7 @@ public class Enemy extends Entity {
 	private BufferedImage[] enemyRight;
 	private BufferedImage[] enemyLeftDamage;
 	private BufferedImage[] enemyRightDamage;
+	private BufferedImage[] enemyDeath;
 
 	public Enemy(int x, int y, int width, int height, BufferedImage sprite) {
 		super(x, y, width, height, null);
@@ -53,12 +59,17 @@ public class Enemy extends Entity {
 		enemyLeft = new BufferedImage[4];
 		enemyRightDamage = new BufferedImage[4];
 		enemyLeftDamage = new BufferedImage[4];
+		enemyDeath = new BufferedImage[8];
 
 		for (int i = 0; i < 4; i++) {
 			enemyRight[i] = Game.spritesheet.getSprite(32 + (i * 16), 64, width, height);
 			enemyLeft[i] = Game.spritesheet.getSprite(32 + (i * 16), 80, width, height);
 			enemyRightDamage[i] = Game.spritesheet.getSprite(32 + (i * 16), 96, width, height);
 			enemyLeftDamage[i] = Game.spritesheet.getSprite(32 + (i * 16), 112, width, height);
+		}
+		
+		for (int i = 0; i < 8; i++) {
+			enemyDeath[i] = Game.spritesheet.getSprite(32 + (i * 16), 128, width, height);
 		}
 	}
 
@@ -98,45 +109,38 @@ public class Enemy extends Entity {
 			}
 		}
 
-		if (enemyAnimFrames >= enemyAnimeMaxFrames) {
-			enemyAnimSpriteIndex++;
-			enemyAnimSpriteIndex %= enemyAnimeMaxSpriteIndex;
-		}
-		enemyAnimFrames %= enemyAnimeMaxFrames;
-		enemyAnimFrames++;
-
 		this.isCollidingWithBullet();
 
+		/** animations area */
+		
+		animWalk();
+		animDamage();
 		if (this.getLife() <= 0) {
-			destroySelf();
-		}
-
-		if (this.getIsDamaged()) {
-			enemyAnimIsDamagedFrames++;
-			enemyAnimIsDamagedFrames %= enemyAnimMaxIsDamagedFrames;
-			if (enemyAnimIsDamagedFrames == 0) {
-				this.setIsDamaged(false);
-			}
+			animDead();
 		}
 
 	}
 
 	public void render(Graphics g) {
 
-		if (!this.getIsDamaged()) {
-			if (direction == Direction.RIGHT) {
-				g.drawImage(enemyRight[enemyAnimSpriteIndex], this.getX() - Camera.x, this.getY() - Camera.y, null);
-			} else if (direction == Direction.LEFT) {
-				g.drawImage(enemyLeft[enemyAnimSpriteIndex], this.getX() - Camera.x, this.getY() - Camera.y, null);
+		if (!getIsDead()) {
+			if (!this.getIsDamaged()) {
+				if (direction == Direction.RIGHT) {
+					g.drawImage(enemyRight[enemyAnimSpriteIndex], this.getX() - Camera.x, this.getY() - Camera.y, null);
+				} else if (direction == Direction.LEFT) {
+					g.drawImage(enemyLeft[enemyAnimSpriteIndex], this.getX() - Camera.x, this.getY() - Camera.y, null);
+				}
+			} else {
+				if (direction == Direction.RIGHT) {
+					g.drawImage(enemyRightDamage[enemyAnimSpriteIndex], this.getX() - Camera.x, this.getY() - Camera.y,
+							null);
+				} else if (direction == Direction.LEFT) {
+					g.drawImage(enemyLeftDamage[enemyAnimSpriteIndex], this.getX() - Camera.x, this.getY() - Camera.y,
+							null);
+				}
 			}
 		} else {
-			if (direction == Direction.RIGHT) {
-				g.drawImage(enemyRightDamage[enemyAnimSpriteIndex], this.getX() - Camera.x, this.getY() - Camera.y,
-						null);
-			} else if (direction == Direction.LEFT) {
-				g.drawImage(enemyLeftDamage[enemyAnimSpriteIndex], this.getX() - Camera.x, this.getY() - Camera.y,
-						null);
-			}
+			g.drawImage(enemyDeath[enemyAnimDeathIndex], this.getX() - Camera.x, this.getY() - Camera.y, null);
 		}
 
 		if (enableRectCollisionMask) {
@@ -157,8 +161,43 @@ public class Enemy extends Entity {
 	}
 
 	public void destroySelf() {
-		Game.enemies.remove(this);
+		// Game.enemies.remove(this); movido para animDead
 		Game.entities.remove(this);
+	}
+
+	private void animDead() {
+		setIsDead(true);
+		setEnableShowLife(false);
+		Game.enemies.remove(this);
+		speed = 0;
+
+		enemyAnimDeathIndexFrames++;
+		enemyAnimDeathIndexFrames %= enemyAnimDeathIndexMaxFrames;
+		if (enemyAnimDeathIndexFrames == 0) {
+			enemyAnimDeathIndex++;
+			if (enemyAnimDeathIndex >= enemyAnimDeathMaxIndex) {
+				destroySelf();
+			}
+		}
+	}
+
+	private void animDamage() {
+		if (this.getIsDamaged()) {
+			enemyAnimIsDamagedFrames++;
+			enemyAnimIsDamagedFrames %= enemyAnimMaxIsDamagedFrames;
+			if (enemyAnimIsDamagedFrames == 0) {
+				this.setIsDamaged(false);
+			}
+		}
+	}
+
+	private void animWalk() {
+		if (enemyAnimFrames >= enemyAnimeMaxFrames) {
+			enemyAnimSpriteIndex++;
+			enemyAnimSpriteIndex %= enemyAnimeMaxSpriteIndex;
+		}
+		enemyAnimFrames %= enemyAnimeMaxFrames;
+		enemyAnimFrames++;
 	}
 
 	private void showLife(Graphics g) {
@@ -246,6 +285,22 @@ public class Enemy extends Entity {
 	}
 
 	/** getters and setters */
+
+	public boolean getEnableShowLife() {
+		return enableShowLife;
+	}
+
+	public void setEnableShowLife(boolean enableShowLife) {
+		this.enableShowLife = enableShowLife;
+	}
+
+	public boolean getIsDead() {
+		return isDead;
+	}
+
+	public void setIsDead(boolean isDead) {
+		this.isDead = isDead;
+	}
 
 	public int getLife() {
 		return life;

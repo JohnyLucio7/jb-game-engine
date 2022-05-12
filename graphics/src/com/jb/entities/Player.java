@@ -92,92 +92,21 @@ public class Player extends Entity {
 
 	public void tick() {
 
-		isMoved = false;
+		movement();
 
-		if (right && World.isFree(this.getX() + speed, this.getY())) {
-			isMoved = true;
-			direction = Direction.RIGHT;
-			setX(getX() + speed);
-		} else if (left && World.isFree(this.getX() - speed, this.getY())) {
-			isMoved = true;
-			direction = Direction.LEFT;
-			setX(getX() - speed);
-		}
-
-		if (up && World.isFree(this.getX(), this.getY() - speed)) {
-			isMoved = true;
-			setY(getY() - speed);
-		} else if (down && World.isFree(this.getX(), this.getY() + speed)) {
-			isMoved = true;
-			setY(getY() + speed);
-		}
-
-		if (isMoved) {
-			if (playerAnimFrames >= playerAnimeMaxFrames) {
-				playerAnimSpriteIndex++;
-				playerAnimSpriteIndex %= playerAnimeMaxSpriteIndex;
-			}
-			playerAnimFrames %= playerAnimeMaxFrames;
-			playerAnimFrames++;
-		} else {
-			playerAnimSpriteIndex = 0;
-		}
+		animWalk();
+		animDamage();
 
 		checkCollisionWithLifepack();
 		checkCollisionWithBullet();
 		checkCollisionWithWeapon();
 
+		shotWithKeyboard();
+		shotWithMouse();
+
 		Camera.x = Camera.clamp(this.getX() - (Game.WIDTH / 2), 0, World.WIDTH * 16 - Game.WIDTH);
 		Camera.y = Camera.clamp(this.getY() - (Game.HEIGHT / 2), 0, World.HEIGHT * 16 - Game.HEIGHT);
 
-		if (getIsDamaged()) {
-			playerAnimIsDamagedFrames++;
-			playerAnimIsDamagedFrames %= playerAnimMaxIsDamagedFrames;
-			if (playerAnimIsDamagedFrames == 0) {
-				setIsDamaged(false);
-			}
-		}
-
-		if (isShoot && hasGun && weapon.getAmmoInClip() > 0) {
-
-			weapon.setAmmoInClip(weapon.getAmmoInClip() - 1);
-			setIsShoot(false);
-
-			int dx;
-
-			if (direction == Direction.RIGHT) {
-				dx = 1;
-			} else {
-				dx = -1;
-			}
-
-			Bulletshoot bullet = new Bulletshoot(getX(), getY(), 3, 3, null, dx, 0);
-			bullet.setPosXOffset((direction == Direction.RIGHT) ? 22 : -10);
-			bullet.setPosYOffset(5);
-			Game.bulletshoot.add(bullet);
-		}
-
-		if (isMouseShoot && hasGun && weapon.getAmmoInClip() > 0) {
-			weapon.setAmmoInClip(weapon.getAmmoInClip() - 1);
-			setIsMouseShoot(false);
-
-			double angle = Math.atan2(this.getMouseY() - (this.getY() + 8 - Camera.y),
-					this.getMouseX() - (this.getX() + 8 - Camera.x));
-
-			System.out.println(Math.toDegrees(angle));
-
-			direction = ((Math.toDegrees(angle) <= 90.0) && (Math.toDegrees(angle) >= -90.0)) ? Direction.RIGHT
-					: Direction.LEFT;
-
-			double dx = Math.cos(angle);
-			double dy = Math.sin(angle);
-
-			Bulletshoot bullet = new Bulletshoot(getX(), getY(), 3, 3, null, dx, dy);
-			bullet.setPosXOffset((direction == Direction.RIGHT) ? 22 : -10);
-			bullet.setPosYOffset(5);
-			Game.bulletshoot.add(bullet);
-
-		}
 	}
 
 	public void render(Graphics g) {
@@ -226,6 +155,96 @@ public class Player extends Entity {
 			showRectBorderCollisionMask(g);
 		}
 
+	}
+
+	private void movement() {
+		isMoved = false;
+
+		if (right && World.isFree(this.getX() + speed, this.getY())) {
+			isMoved = true;
+			direction = Direction.RIGHT;
+			setX(getX() + speed);
+		} else if (left && World.isFree(this.getX() - speed, this.getY())) {
+			isMoved = true;
+			direction = Direction.LEFT;
+			setX(getX() - speed);
+		}
+
+		if (up && World.isFree(this.getX(), this.getY() - speed)) {
+			isMoved = true;
+			setY(getY() - speed);
+		} else if (down && World.isFree(this.getX(), this.getY() + speed)) {
+			isMoved = true;
+			setY(getY() + speed);
+		}
+	}
+
+	private void animWalk() {
+		if (isMoved) {
+			if (playerAnimFrames >= playerAnimeMaxFrames) {
+				playerAnimSpriteIndex++;
+				playerAnimSpriteIndex %= playerAnimeMaxSpriteIndex;
+			}
+			playerAnimFrames %= playerAnimeMaxFrames;
+			playerAnimFrames++;
+		} else {
+			playerAnimSpriteIndex = 0;
+		}
+	}
+
+	private void animDamage() {
+		if (getIsDamaged()) {
+			playerAnimIsDamagedFrames++;
+			playerAnimIsDamagedFrames %= playerAnimMaxIsDamagedFrames;
+			if (playerAnimIsDamagedFrames == 0) {
+				setIsDamaged(false);
+			}
+		}
+	}
+
+	private void shotWithMouse() {
+		if (isMouseShoot && hasGun && weapon.getAmmoInClip() > 0) {
+			weapon.setAmmoInClip(weapon.getAmmoInClip() - 1);
+			setIsMouseShoot(false);
+
+			double angle = Math.atan2(this.getMouseY() - (this.getY() + 8 - Camera.y),
+					this.getMouseX() - (this.getX() + 8 - Camera.x));
+
+			System.out.println(Math.toDegrees(angle));
+
+			direction = ((Math.toDegrees(angle) <= 90.0) && (Math.toDegrees(angle) >= -90.0)) ? Direction.RIGHT
+					: Direction.LEFT;
+
+			double dx = Math.cos(angle);
+			double dy = Math.sin(angle);
+
+			Bulletshoot bullet = new Bulletshoot(getX(), getY(), 3, 3, null, dx, dy);
+			bullet.setPosXOffset((direction == Direction.RIGHT) ? 22 : -10);
+			bullet.setPosYOffset(5);
+			Game.bulletshoot.add(bullet);
+
+		}
+	}
+
+	private void shotWithKeyboard() {
+		if (isShoot && hasGun && weapon.getAmmoInClip() > 0) {
+
+			weapon.setAmmoInClip(weapon.getAmmoInClip() - 1);
+			setIsShoot(false);
+
+			int dx;
+
+			if (direction == Direction.RIGHT) {
+				dx = 1;
+			} else {
+				dx = -1;
+			}
+
+			Bulletshoot bullet = new Bulletshoot(getX(), getY(), 3, 3, null, dx, 0);
+			bullet.setPosXOffset((direction == Direction.RIGHT) ? 22 : -10);
+			bullet.setPosYOffset(5);
+			Game.bulletshoot.add(bullet);
+		}
 	}
 
 	private void showRectCollisionMask(Graphics g) {
