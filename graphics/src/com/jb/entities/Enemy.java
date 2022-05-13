@@ -1,6 +1,7 @@
 package com.jb.entities;
 
 import java.awt.Color;
+import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Rectangle;
 import java.awt.image.BufferedImage;
@@ -43,6 +44,8 @@ public class Enemy extends Entity {
 	private int enemyAnimDeathMaxIndex = 8;
 	private int enemyAnimDeathIndexFrames = 0;
 	private int enemyAnimDeathIndexMaxFrames = 5;
+	private int indexDamageNumFeedback = 0;
+	private int lenDamageNumFeedback = 8;
 
 	/** image vectors */
 
@@ -67,7 +70,7 @@ public class Enemy extends Entity {
 			enemyRightDamage[i] = Game.spritesheet.getSprite(32 + (i * 16), 96, width, height);
 			enemyLeftDamage[i] = Game.spritesheet.getSprite(32 + (i * 16), 112, width, height);
 		}
-		
+
 		for (int i = 0; i < 8; i++) {
 			enemyDeath[i] = Game.spritesheet.getSprite(32 + (i * 16), 128, width, height);
 		}
@@ -112,7 +115,7 @@ public class Enemy extends Entity {
 		this.isCollidingWithBullet();
 
 		/** animations area */
-		
+
 		animWalk();
 		animDamage();
 		if (this.getLife() <= 0) {
@@ -157,6 +160,9 @@ public class Enemy extends Entity {
 
 		if (enableShowLife) {
 			this.showLife(g);
+		}
+		if (getIsDamaged() && !getIsDead()) {
+			this.showDamageNumFeedback(g);
 		}
 	}
 
@@ -210,6 +216,15 @@ public class Enemy extends Entity {
 		double currentLife = life;
 		g.fillRect(getX() + getMaskX() - Camera.x, getY() + getMaskY() - Camera.y, (int) (currentLife / maxLife * 8),
 				2);
+	}
+
+	private void showDamageNumFeedback(Graphics g) {
+		indexDamageNumFeedback %= lenDamageNumFeedback;
+		indexDamageNumFeedback++;
+		g.setColor(Color.white);
+		g.setFont(new Font("Arial", Font.BOLD, 5));
+		g.drawString("1", getX() + 6 - Camera.x, getY() + 6 - indexDamageNumFeedback - Camera.y);
+
 	}
 
 	public void isCollidingWithBullet() {

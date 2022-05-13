@@ -1,7 +1,6 @@
 package com.jb.entities;
 
 import java.awt.image.BufferedImage;
-
 import com.jb.main.Game;
 
 public class Weapon extends Entity {
@@ -12,7 +11,7 @@ public class Weapon extends Entity {
 	public Weapon(int x, int y, int width, int height, BufferedImage sprite) {
 		super(x, y, width, height, sprite);
 
-		this.ammoInClip = 300;
+		this.ammoInClip = 3;
 		this.maxAmmoInClip = 6;
 
 	}

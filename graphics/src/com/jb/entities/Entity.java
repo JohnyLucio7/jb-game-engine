@@ -6,6 +6,7 @@ import java.awt.image.BufferedImage;
 
 import com.jb.main.Game;
 import com.jb.world.Camera;
+import com.jb.world.Tile;
 
 public class Entity {
 
@@ -104,9 +105,16 @@ public class Entity {
 		Rectangle e1Mask = new Rectangle(e1.getX() + e1.getMaskX(), e1.getY() + e1.getMaskY(), e1.getMaskW(),
 				e1.getMaskH());
 		Rectangle e2Mask = new Rectangle(e2.getX() + e2.getMaskX(), e2.getY() + e2.getMaskY(), e2.getMaskW(),
-				e1.getMaskH());
+				e2.getMaskH());
 
 		return e1Mask.intersects(e2Mask);
+	}
+
+	public static boolean isCollindingWithTile(Entity e, Tile t) {
+		Rectangle EMask = new Rectangle(e.getX() + e.getMaskX(), e.getY() + e.getMaskY(), e.getMaskW(), e.getMaskH());
+		Rectangle TMask = new Rectangle(t.getX(), t.getY(), 16, 16);
+
+		return EMask.intersects(TMask);
 	}
 
 }

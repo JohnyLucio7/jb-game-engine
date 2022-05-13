@@ -1,6 +1,7 @@
 package com.jb.entities;
 
 import java.awt.Color;
+import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.image.BufferedImage;
 
@@ -155,6 +156,8 @@ public class Player extends Entity {
 			showRectBorderCollisionMask(g);
 		}
 
+		//showReloadFeedback(g);
+
 	}
 
 	private void movement() {
@@ -218,9 +221,10 @@ public class Player extends Entity {
 			double dx = Math.cos(angle);
 			double dy = Math.sin(angle);
 
-			Bulletshoot bullet = new Bulletshoot(getX(), getY(), 3, 3, null, dx, dy);
-			bullet.setPosXOffset((direction == Direction.RIGHT) ? 22 : -10);
-			bullet.setPosYOffset(5);
+			int offSetX = (direction == Direction.RIGHT) ? 22 : -10;
+			int offSetY = 5;
+
+			Bulletshoot bullet = new Bulletshoot(getX() + offSetX, getY() + offSetY, 3, 3, null, dx, dy);
 			Game.bulletshoot.add(bullet);
 
 		}
@@ -232,17 +236,11 @@ public class Player extends Entity {
 			weapon.setAmmoInClip(weapon.getAmmoInClip() - 1);
 			setIsShoot(false);
 
-			int dx;
+			int dx = (direction == Direction.RIGHT) ? 1 : -1;
+			int offSetX = (direction == Direction.RIGHT) ? 22 : -10;
+			int offSetY = 5;
 
-			if (direction == Direction.RIGHT) {
-				dx = 1;
-			} else {
-				dx = -1;
-			}
-
-			Bulletshoot bullet = new Bulletshoot(getX(), getY(), 3, 3, null, dx, 0);
-			bullet.setPosXOffset((direction == Direction.RIGHT) ? 22 : -10);
-			bullet.setPosYOffset(5);
+			Bulletshoot bullet = new Bulletshoot(getX() + offSetX, getY() + offSetY, 3, 3, null, dx, 0);
 			Game.bulletshoot.add(bullet);
 		}
 	}
@@ -263,6 +261,12 @@ public class Player extends Entity {
 				this.getY() + this.getMaskY() + this.getMaskH() - Camera.y,
 				this.getY() + this.getMaskY() + this.getMaskH() - Camera.y };
 		g.drawPolygon(dx, dy, 4);
+	}
+
+	public void showReloadFeedback(Graphics g) {
+		g.setColor(Color.white);
+		g.setFont(new Font("Arial", Font.BOLD, 7));
+		g.drawString("R", getX() + 18 - Camera.x, getY() + 18 - Camera.y);
 	}
 
 	public void checkCollisionWithWeapon() {

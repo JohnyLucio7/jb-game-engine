@@ -263,7 +263,7 @@ public class Game extends Canvas implements Runnable, KeyListener, MouseListener
 		}
 		player.setMouseX((e.getX() / SCALE));
 		player.setMouseY((e.getY() / SCALE));
-		//System.out.println("X: " + player.getMouseX() + " Y: " + player.getMouseY());
+		// System.out.println("X: " + player.getMouseX() + " Y: " + player.getMouseY());
 	}
 
 	@Override
