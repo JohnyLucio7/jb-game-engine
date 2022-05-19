@@ -8,7 +8,7 @@ import java.awt.image.BufferedImage;
 
 import com.jb.main.Game;
 import com.jb.world.Camera;
-import com.jb.world.Direction;
+import com.jb.enums.Direction;
 import com.jb.world.World;
 
 public class Enemy extends Entity {

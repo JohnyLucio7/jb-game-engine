@@ -7,7 +7,7 @@ import java.awt.image.BufferedImage;
 
 import com.jb.main.Game;
 import com.jb.world.Camera;
-import com.jb.world.Direction;
+import com.jb.enums.Direction;
 import com.jb.world.World;
 
 public class Player extends Entity {
@@ -156,7 +156,7 @@ public class Player extends Entity {
 			showRectBorderCollisionMask(g);
 		}
 
-		//showReloadFeedback(g);
+		// showReloadFeedback(g);
 
 	}
 

@@ -3,6 +3,7 @@ package com.jb.main;
 import java.awt.Canvas;
 import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
@@ -20,6 +21,7 @@ import com.jb.entities.Bulletshoot;
 import com.jb.entities.Enemy;
 import com.jb.entities.Entity;
 import com.jb.entities.Player;
+import com.jb.enums.GameState;
 import com.jb.graphics.Spritesheet;
 import com.jb.graphics.UI;
 import com.jb.world.World;
@@ -52,6 +54,7 @@ public class Game extends Canvas implements Runnable, KeyListener, MouseListener
 	public static Player player;
 	public static Random rand;
 	public static UI ui;
+	public static GameState gameState = GameState.NORMAL;
 
 	public Game() {
 		this.addKeyListener(this);
@@ -93,6 +96,18 @@ public class Game extends Canvas implements Runnable, KeyListener, MouseListener
 		world = new World("/" + level);
 	}
 
+	public void gameOver(Graphics g) {
+		if (gameState == GameState.GAMEOVER) {
+			g.setColor(new Color(0, 0, 0, 100));
+			g.fillRect(0, 0, WIDTH * SCALE, HEIGHT * SCALE);
+			g.setColor(Color.white);
+			g.setFont(new Font("arial", Font.BOLD, 36));
+			g.drawString("Game Over", (WIDTH * SCALE) / 2 - 95, (HEIGHT * SCALE) / 2);
+			g.setFont(new Font("arial", Font.BOLD, 32));
+			g.drawString(">Enter para reiniciar<", (WIDTH * SCALE) / 2 - 165, (HEIGHT * SCALE) / 2 + 40);
+		}
+	}
+
 	/** Método que inicializar a execução da thread */
 	public synchronized void start() {
 		thread = new Thread(this);
@@ -118,27 +133,35 @@ public class Game extends Canvas implements Runnable, KeyListener, MouseListener
 
 	/** Método de atualização principal */
 	public void tick() {
-		for (int i = 0; i < entities.size(); i++) {
-			Entity e = entities.get(i);
-			e.tick();
-		}
 
-		for (int i = 0; i < bulletshoot.size(); i++) {
-			bulletshoot.get(i).tick();
-		}
+		if (gameState == GameState.NORMAL) {
 
-		if (enemies.size() == 0) {
-			System.out.println("next Level!");
-			CURRENT_LEVEL++;
-			if (CURRENT_LEVEL > MAX_LEVEL)
-				CURRENT_LEVEL = 1;
-			String newWorld = "level" + CURRENT_LEVEL + ".png";
-			reinitGame(newWorld);
-		}
+			for (int i = 0; i < entities.size(); i++) {
+				Entity e = entities.get(i);
+				e.tick();
+			}
 
-		if (player.getLife() <= 0) {
-			String world = "level" + CURRENT_LEVEL + ".png";
-			reinitGame(world);
+			for (int i = 0; i < bulletshoot.size(); i++) {
+				bulletshoot.get(i).tick();
+			}
+
+			if (enemies.size() == 0) {
+				System.out.println("next Level!");
+				CURRENT_LEVEL++;
+				if (CURRENT_LEVEL > MAX_LEVEL)
+					CURRENT_LEVEL = 1;
+				String newWorld = "level" + CURRENT_LEVEL + ".png";
+				reinitGame(newWorld);
+			}
+
+			// mover para o player
+			if (player.getLife() <= 0) {
+				String world = "level" + CURRENT_LEVEL + ".png";
+				reinitGame(world);
+				gameState = GameState.GAMEOVER;
+			}
+		} else if (gameState == GameState.GAMEOVER) {
+			System.out.println("Game Over");
 		}
 
 	}
@@ -165,6 +188,7 @@ public class Game extends Canvas implements Runnable, KeyListener, MouseListener
 			Entity e = entities.get(i);
 			e.render(g);
 		}
+		
 		for (int i = 0; i < bulletshoot.size(); i++) {
 			bulletshoot.get(i).render(g);
 		}
@@ -178,6 +202,8 @@ public class Game extends Canvas implements Runnable, KeyListener, MouseListener
 		g.drawImage(biImage, 0, 0, WIDTH * SCALE, HEIGHT * SCALE, null); // DESENHO DA IMAGEM NO FRAME
 
 		ui.renderWithoutScale(g);
+
+		gameOver(g);
 
 		bs.show();
 	}
