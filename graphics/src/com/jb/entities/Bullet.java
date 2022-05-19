@@ -4,7 +4,7 @@ import java.awt.image.BufferedImage;
 
 public class Bullet extends Entity {
 
-	private int ammo = 18;
+	private int ammo = 24;
 
 	public Bullet(int x, int y, int width, int height, BufferedImage sprite) {
 		super(x, y, width, height, sprite);

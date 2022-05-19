@@ -40,6 +40,7 @@ public class Game extends Canvas implements Runnable, KeyListener, MouseListener
 	public static final int HEIGHT = 160; // 160
 	public static final int SCALE = 3;
 	private static final double FPS = 60.0;
+	private int CURRENT_LEVEL = 1, MAX_LEVEL = 2;
 	private Thread thread;
 	private BufferedImage biImage;
 	public static JFrame frame;
@@ -67,7 +68,7 @@ public class Game extends Canvas implements Runnable, KeyListener, MouseListener
 		spritesheet = new Spritesheet("/spritesheet.png");
 		player = new Player(0, 0, 16, 16, spritesheet.getSprite(32, 0, 16, 16));
 		entities.add(player);
-		world = new World("/map.png");
+		world = new World("/level1.png");
 		ui = new UI();
 	}
 
@@ -81,17 +82,15 @@ public class Game extends Canvas implements Runnable, KeyListener, MouseListener
 		frame.setVisible(true);
 	}
 
-	public void reinitGame() {
-		if (player.getLife() <= 0) {
-			entities.clear();
-			enemies.clear();
-			entities = new ArrayList<Entity>();
-			enemies = new ArrayList<Enemy>();
-			spritesheet = new Spritesheet("/spritesheet.png");
-			player = new Player(0, 0, 16, 16, spritesheet.getSprite(32, 0, 16, 16));
-			entities.add(player);
-			world = new World("/map.png");
-		}
+	public void reinitGame(String level) {
+		entities.clear();
+		enemies.clear();
+		entities = new ArrayList<Entity>();
+		enemies = new ArrayList<Enemy>();
+		spritesheet = new Spritesheet("/spritesheet.png");
+		player = new Player(0, 0, 16, 16, spritesheet.getSprite(32, 0, 16, 16));
+		entities.add(player);
+		world = new World("/" + level);
 	}
 
 	/** Método que inicializar a execução da thread */
@@ -128,7 +127,20 @@ public class Game extends Canvas implements Runnable, KeyListener, MouseListener
 			bulletshoot.get(i).tick();
 		}
 
-		// reinitGame();
+		if (enemies.size() == 0) {
+			System.out.println("next Level!");
+			CURRENT_LEVEL++;
+			if (CURRENT_LEVEL > MAX_LEVEL)
+				CURRENT_LEVEL = 1;
+			String newWorld = "level" + CURRENT_LEVEL + ".png";
+			reinitGame(newWorld);
+		}
+
+		if (player.getLife() <= 0) {
+			String world = "level" + CURRENT_LEVEL + ".png";
+			reinitGame(world);
+		}
+
 	}
 
 	public void render() {

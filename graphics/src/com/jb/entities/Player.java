@@ -60,7 +60,7 @@ public class Player extends Entity {
 	/** weapons configuration */
 	private Weapon weapon;
 	private int ammo = 0;
-	private int maxAmmo = 72;
+	private int maxAmmo = 96;
 	private int weaponXOffset = 0;
 	private int weaponYOffset = 0;
 
