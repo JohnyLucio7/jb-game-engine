@@ -56,6 +56,11 @@ public class Game extends Canvas implements Runnable, KeyListener, MouseListener
 	public static UI ui;
 	public static GameState gameState = GameState.NORMAL;
 
+	private boolean restartGame = false;
+	private boolean enableShowMessageGameOver = true;
+	private int framesShowMessageGameOver = 0;
+	private int MaxFramesShowMessageGameOver = 15;
+
 	public Game() {
 		this.addKeyListener(this);
 		this.addMouseListener(this);
@@ -104,7 +109,9 @@ public class Game extends Canvas implements Runnable, KeyListener, MouseListener
 			g.setFont(new Font("arial", Font.BOLD, 36));
 			g.drawString("Game Over", (WIDTH * SCALE) / 2 - 95, (HEIGHT * SCALE) / 2);
 			g.setFont(new Font("arial", Font.BOLD, 32));
-			g.drawString(">Enter para reiniciar<", (WIDTH * SCALE) / 2 - 165, (HEIGHT * SCALE) / 2 + 40);
+			if (enableShowMessageGameOver) {
+				g.drawString(">Enter para reiniciar<", (WIDTH * SCALE) / 2 - 165, (HEIGHT * SCALE) / 2 + 40);
+			}
 		}
 	}
 
@@ -136,6 +143,8 @@ public class Game extends Canvas implements Runnable, KeyListener, MouseListener
 
 		if (gameState == GameState.NORMAL) {
 
+			this.restartGame = false;
+
 			for (int i = 0; i < entities.size(); i++) {
 				Entity e = entities.get(i);
 				e.tick();
@@ -156,12 +165,23 @@ public class Game extends Canvas implements Runnable, KeyListener, MouseListener
 
 			// mover para o player
 			if (player.getLife() <= 0) {
-				String world = "level" + CURRENT_LEVEL + ".png";
-				reinitGame(world);
 				gameState = GameState.GAMEOVER;
 			}
 		} else if (gameState == GameState.GAMEOVER) {
 			System.out.println("Game Over");
+
+			framesShowMessageGameOver++;
+			framesShowMessageGameOver %= MaxFramesShowMessageGameOver;
+			if (framesShowMessageGameOver == 0) {
+				enableShowMessageGameOver = !enableShowMessageGameOver;
+			}
+
+			if (restartGame) {
+				this.restartGame = false;
+				gameState = GameState.NORMAL;
+				String world = "level" + CURRENT_LEVEL + ".png";
+				reinitGame(world);
+			}
 		}
 
 	}
@@ -188,7 +208,7 @@ public class Game extends Canvas implements Runnable, KeyListener, MouseListener
 			Entity e = entities.get(i);
 			e.render(g);
 		}
-		
+
 		for (int i = 0; i < bulletshoot.size(); i++) {
 			bulletshoot.get(i).render(g);
 		}
@@ -268,6 +288,10 @@ public class Game extends Canvas implements Runnable, KeyListener, MouseListener
 
 		if (e.getKeyCode() == KeyEvent.VK_R && Game.player.getHasGun()) {
 			Game.player.getWeapon().reload(Game.player.getAmmo());
+		}
+
+		if (e.getKeyCode() == KeyEvent.VK_ENTER) {
+			this.restartGame = true;
 		}
 
 	}
