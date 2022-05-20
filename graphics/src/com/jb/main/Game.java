@@ -3,7 +3,6 @@ package com.jb.main;
 import java.awt.Canvas;
 import java.awt.Color;
 import java.awt.Dimension;
-import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
@@ -38,11 +37,19 @@ public class Game extends Canvas implements Runnable, KeyListener, MouseListener
 
 	private static final long serialVersionUID = 1L;
 	private boolean isRunning = true;
-	public static final int WIDTH = 240; // 240
-	public static final int HEIGHT = 160; // 160
+	private boolean restartGame = false;
+	public static boolean enableShowMessageGameOver = true;
+
+	private int currentLevel = 1;
+	private int maxLevel = 2;
+	private int framesShowMessageGameOver = 0;
+	private int MaxFramesShowMessageGameOver = 15;
+
+	public static final double FPS = 60.0;
+	public static final int WIDTH = 240;
+	public static final int HEIGHT = 160;
 	public static final int SCALE = 3;
-	private static final double FPS = 60.0;
-	private int CURRENT_LEVEL = 1, MAX_LEVEL = 2;
+
 	private Thread thread;
 	private BufferedImage biImage;
 	public static JFrame frame;
@@ -55,11 +62,6 @@ public class Game extends Canvas implements Runnable, KeyListener, MouseListener
 	public static Random rand;
 	public static UI ui;
 	public static GameState gameState = GameState.NORMAL;
-
-	private boolean restartGame = false;
-	private boolean enableShowMessageGameOver = true;
-	private int framesShowMessageGameOver = 0;
-	private int MaxFramesShowMessageGameOver = 15;
 
 	public Game() {
 		this.addKeyListener(this);
@@ -78,41 +80,6 @@ public class Game extends Canvas implements Runnable, KeyListener, MouseListener
 		entities.add(player);
 		world = new World("/level1.png");
 		ui = new UI();
-	}
-
-	public void initFrame() {
-		frame = new JFrame("Zelda Clone");
-		frame.add(this);
-		frame.setResizable(false);
-		frame.pack();
-		frame.setLocationRelativeTo(null);
-		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		frame.setVisible(true);
-	}
-
-	public void reinitGame(String level) {
-		entities.clear();
-		enemies.clear();
-		entities = new ArrayList<Entity>();
-		enemies = new ArrayList<Enemy>();
-		spritesheet = new Spritesheet("/spritesheet.png");
-		player = new Player(0, 0, 16, 16, spritesheet.getSprite(32, 0, 16, 16));
-		entities.add(player);
-		world = new World("/" + level);
-	}
-
-	public void gameOver(Graphics g) {
-		if (gameState == GameState.GAMEOVER) {
-			g.setColor(new Color(0, 0, 0, 100));
-			g.fillRect(0, 0, WIDTH * SCALE, HEIGHT * SCALE);
-			g.setColor(Color.white);
-			g.setFont(new Font("arial", Font.BOLD, 36));
-			g.drawString("Game Over", (WIDTH * SCALE) / 2 - 95, (HEIGHT * SCALE) / 2);
-			g.setFont(new Font("arial", Font.BOLD, 32));
-			if (enableShowMessageGameOver) {
-				g.drawString(">Enter para reiniciar<", (WIDTH * SCALE) / 2 - 165, (HEIGHT * SCALE) / 2 + 40);
-			}
-		}
 	}
 
 	/** Método que inicializar a execução da thread */
@@ -143,49 +110,23 @@ public class Game extends Canvas implements Runnable, KeyListener, MouseListener
 
 		if (gameState == GameState.NORMAL) {
 
-			this.restartGame = false;
+			setRestartGame(false);
 
-			for (int i = 0; i < entities.size(); i++) {
-				Entity e = entities.get(i);
-				e.tick();
-			}
+			entitiesTick();
+			bulletshootTick();
 
-			for (int i = 0; i < bulletshoot.size(); i++) {
-				bulletshoot.get(i).tick();
-			}
+			nextLevel();
 
-			if (enemies.size() == 0) {
-				System.out.println("next Level!");
-				CURRENT_LEVEL++;
-				if (CURRENT_LEVEL > MAX_LEVEL)
-					CURRENT_LEVEL = 1;
-				String newWorld = "level" + CURRENT_LEVEL + ".png";
-				reinitGame(newWorld);
-			}
-
-			// mover para o player
-			if (player.getLife() <= 0) {
-				gameState = GameState.GAMEOVER;
-			}
 		} else if (gameState == GameState.GAMEOVER) {
-			System.out.println("Game Over");
 
-			framesShowMessageGameOver++;
-			framesShowMessageGameOver %= MaxFramesShowMessageGameOver;
-			if (framesShowMessageGameOver == 0) {
-				enableShowMessageGameOver = !enableShowMessageGameOver;
-			}
+			animMessageGameOver();
 
-			if (restartGame) {
-				this.restartGame = false;
-				gameState = GameState.NORMAL;
-				String world = "level" + CURRENT_LEVEL + ".png";
-				reinitGame(world);
-			}
+			restartAfterGameOver();
 		}
 
 	}
 
+	/** Método de renderização principal */
 	public void render() {
 
 		BufferStrategy bs = this.getBufferStrategy();
@@ -204,14 +145,9 @@ public class Game extends Canvas implements Runnable, KeyListener, MouseListener
 
 		world.render(g);
 
-		for (int i = 0; i < entities.size(); i++) {
-			Entity e = entities.get(i);
-			e.render(g);
-		}
+		this.entitiesRender(g);
 
-		for (int i = 0; i < bulletshoot.size(); i++) {
-			bulletshoot.get(i).render(g);
-		}
+		this.bulletshootRender(g);
 
 		ui.render(g);
 
@@ -222,9 +158,7 @@ public class Game extends Canvas implements Runnable, KeyListener, MouseListener
 		g.drawImage(biImage, 0, 0, WIDTH * SCALE, HEIGHT * SCALE, null); // DESENHO DA IMAGEM NO FRAME
 
 		ui.renderWithoutScale(g);
-
-		gameOver(g);
-
+		ui.gameOverUI(g);
 		bs.show();
 	}
 
@@ -260,6 +194,80 @@ public class Game extends Canvas implements Runnable, KeyListener, MouseListener
 		stop();
 	}
 
+	private void initFrame() {
+		frame = new JFrame("Zelda Clone");
+		frame.add(this);
+		frame.setResizable(false);
+		frame.pack();
+		frame.setLocationRelativeTo(null);
+		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		frame.setVisible(true);
+	}
+
+	private void reinitGame(String level) {
+		entities.clear();
+		enemies.clear();
+		entities = new ArrayList<Entity>();
+		enemies = new ArrayList<Enemy>();
+		spritesheet = new Spritesheet("/spritesheet.png");
+		player = new Player(0, 0, 16, 16, spritesheet.getSprite(32, 0, 16, 16));
+		entities.add(player);
+		world = new World("/" + level);
+	}
+
+	private void nextLevel() {
+		if (enemies.size() == 0) {
+			currentLevel++;
+			if (currentLevel > maxLevel)
+				currentLevel = 1;
+			String newWorld = "level" + currentLevel + ".png";
+			reinitGame(newWorld);
+		}
+	}
+
+	private void restartAfterGameOver() {
+		if (this.getRestartGame()) {
+			this.setRestartGame(false);
+			gameState = GameState.NORMAL;
+			String world = "level" + currentLevel + ".png";
+			reinitGame(world);
+		}
+	}
+
+	private void entitiesTick() {
+		for (int i = 0; i < entities.size(); i++) {
+			Entity e = entities.get(i);
+			e.tick();
+		}
+	}
+
+	private void bulletshootTick() {
+		for (int i = 0; i < bulletshoot.size(); i++) {
+			bulletshoot.get(i).tick();
+		}
+	}
+
+	private void entitiesRender(Graphics g) {
+		for (int i = 0; i < entities.size(); i++) {
+			Entity e = entities.get(i);
+			e.render(g);
+		}
+	}
+
+	private void bulletshootRender(Graphics g) {
+		for (int i = 0; i < bulletshoot.size(); i++) {
+			bulletshoot.get(i).render(g);
+		}
+	}
+
+	private void animMessageGameOver() {
+		framesShowMessageGameOver++;
+		framesShowMessageGameOver %= MaxFramesShowMessageGameOver;
+		if (framesShowMessageGameOver == 0) {
+			enableShowMessageGameOver = !enableShowMessageGameOver;
+		}
+	}
+
 	@Override
 	public void keyTyped(KeyEvent e) {
 		// TODO Auto-generated method stub
@@ -291,7 +299,7 @@ public class Game extends Canvas implements Runnable, KeyListener, MouseListener
 		}
 
 		if (e.getKeyCode() == KeyEvent.VK_ENTER) {
-			this.restartGame = true;
+			this.setRestartGame(true);
 		}
 
 	}
@@ -344,5 +352,15 @@ public class Game extends Canvas implements Runnable, KeyListener, MouseListener
 	public void mouseExited(MouseEvent e) {
 		// TODO Auto-generated method stub
 
+	}
+
+	/** getters and setters */
+
+	public boolean getRestartGame() {
+		return restartGame;
+	}
+
+	public void setRestartGame(boolean restartGame) {
+		this.restartGame = restartGame;
 	}
 }

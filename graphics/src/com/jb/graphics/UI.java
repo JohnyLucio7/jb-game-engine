@@ -4,6 +4,7 @@ import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics;
 
+import com.jb.enums.GameState;
 import com.jb.main.Game;
 
 public class UI {
@@ -37,5 +38,20 @@ public class UI {
 		}
 
 		return res;
+	}
+
+	public void gameOverUI(Graphics g) {
+		if (Game.gameState == GameState.GAMEOVER) {
+			g.setColor(new Color(0, 0, 0, 100));
+			g.fillRect(0, 0, Game.WIDTH * Game.SCALE, Game.HEIGHT * Game.SCALE);
+			g.setColor(Color.white);
+			g.setFont(new Font("arial", Font.BOLD, 36));
+			g.drawString("Game Over", (Game.WIDTH * Game.SCALE) / 2 - 95, (Game.HEIGHT * Game.SCALE) / 2);
+			g.setFont(new Font("arial", Font.BOLD, 32));
+			if (Game.enableShowMessageGameOver) {
+				g.drawString(">Enter para reiniciar<", (Game.WIDTH * Game.SCALE) / 2 - 165,
+						(Game.HEIGHT * Game.SCALE) / 2 + 40);
+			}
+		}
 	}
 }

@@ -8,6 +8,7 @@ import java.awt.image.BufferedImage;
 import com.jb.main.Game;
 import com.jb.world.Camera;
 import com.jb.enums.Direction;
+import com.jb.enums.GameState;
 import com.jb.world.World;
 
 public class Player extends Entity {
@@ -94,6 +95,7 @@ public class Player extends Entity {
 	public void tick() {
 
 		movement();
+		lifecheck();
 
 		animWalk();
 		animDamage();
@@ -179,6 +181,12 @@ public class Player extends Entity {
 		} else if (down && World.isFree(this.getX(), this.getY() + speed)) {
 			isMoved = true;
 			setY(getY() + speed);
+		}
+	}
+
+	private void lifecheck() {
+		if (this.getLife() <= 0) {
+			Game.gameState = GameState.GAMEOVER;
 		}
 	}
 
