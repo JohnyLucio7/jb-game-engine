@@ -52,7 +52,6 @@ public class World {
 					case 0xFFFFFF00:
 						// yellow, Bullet
 						Game.entities.add(new Bullet(x * 16, y * 16, 16, 16, Entity.BULLET_EN));
-						System.out.println("Amarelo");
 						break;
 					case 0xFFFF00FF:
 						// rose, Weapon

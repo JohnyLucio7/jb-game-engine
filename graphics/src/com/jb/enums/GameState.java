@@ -1,5 +1,5 @@
 package com.jb.enums;
 
 public enum GameState {
-	NORMAL, GAMEOVER
+	NORMAL, GAMEOVER, MENU
 }

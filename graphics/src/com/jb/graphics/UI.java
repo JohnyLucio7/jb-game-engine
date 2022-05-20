@@ -54,4 +54,10 @@ public class UI {
 			}
 		}
 	}
+
+	public void menuUI(Graphics g) {
+		if (Game.gameState == GameState.MENU) {
+			Game.menu.render(g);
+		}
+	}
 }

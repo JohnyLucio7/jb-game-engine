@@ -170,6 +170,7 @@ public class Enemy extends Entity {
 		// Game.enemies.remove(this); movido para animDead
 		Game.entities.remove(this);
 	}
+	
 
 	private void animDead() {
 		setIsDead(true);

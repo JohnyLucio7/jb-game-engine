@@ -61,7 +61,8 @@ public class Game extends Canvas implements Runnable, KeyListener, MouseListener
 	public static Player player;
 	public static Random rand;
 	public static UI ui;
-	public static GameState gameState = GameState.NORMAL;
+	public static GameState gameState = GameState.MENU;
+	public static Menu menu;
 
 	public Game() {
 		this.addKeyListener(this);
@@ -75,6 +76,7 @@ public class Game extends Canvas implements Runnable, KeyListener, MouseListener
 		entities = new ArrayList<Entity>();
 		enemies = new ArrayList<Enemy>();
 		bulletshoot = new ArrayList<Bulletshoot>();
+		menu = new Menu();
 		spritesheet = new Spritesheet("/spritesheet.png");
 		player = new Player(0, 0, 16, 16, spritesheet.getSprite(32, 0, 16, 16));
 		entities.add(player);
@@ -116,12 +118,21 @@ public class Game extends Canvas implements Runnable, KeyListener, MouseListener
 			bulletshootTick();
 
 			nextLevel();
+			return;
+		}
 
-		} else if (gameState == GameState.GAMEOVER) {
+		if (gameState == GameState.GAMEOVER) {
 
 			animMessageGameOver();
 
 			restartAfterGameOver();
+			return;
+		}
+
+		if (gameState == GameState.MENU) {
+
+			menu.tick();
+			// restartAfterGameOver();
 		}
 
 	}
@@ -159,6 +170,7 @@ public class Game extends Canvas implements Runnable, KeyListener, MouseListener
 
 		ui.renderWithoutScale(g);
 		ui.gameOverUI(g);
+		ui.menuUI(g);
 		bs.show();
 	}
 
@@ -277,27 +289,38 @@ public class Game extends Canvas implements Runnable, KeyListener, MouseListener
 	@Override
 	public void keyPressed(KeyEvent e) {
 
+		// right and left
 		if (e.getKeyCode() == KeyEvent.VK_RIGHT || e.getKeyCode() == KeyEvent.VK_D) {
 			player.setRight(true);
 		} else if (e.getKeyCode() == KeyEvent.VK_LEFT || e.getKeyCode() == KeyEvent.VK_A) {
 			player.setLeft(true);
 		}
 
+		// up and down
 		if (e.getKeyCode() == KeyEvent.VK_UP || e.getKeyCode() == KeyEvent.VK_W) {
 			player.setUp(true);
+			if (gameState == GameState.MENU) {
+				menu.setUp(true);
+			}
 		} else if (e.getKeyCode() == KeyEvent.VK_DOWN || e.getKeyCode() == KeyEvent.VK_S) {
 			player.setDown(true);
+			if (gameState == GameState.MENU) {
+				menu.setDown(true);
+			}
 		}
 
+		// Control
 		if (e.getKeyCode() == KeyEvent.VK_CONTROL && Game.player.getHasGun()
 				&& Game.player.getWeapon().getAmmoInClip() > 0) {
 			player.setIsShoot(true);
 		}
 
+		// R
 		if (e.getKeyCode() == KeyEvent.VK_R && Game.player.getHasGun()) {
 			Game.player.getWeapon().reload(Game.player.getAmmo());
 		}
 
+		// Enter
 		if (e.getKeyCode() == KeyEvent.VK_ENTER) {
 			this.setRestartGame(true);
 		}
