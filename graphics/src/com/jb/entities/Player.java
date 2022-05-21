@@ -107,8 +107,7 @@ public class Player extends Entity {
 		shotWithKeyboard();
 		shotWithMouse();
 
-		Camera.x = Camera.clamp(this.getX() - (Game.WIDTH / 2), 0, World.WIDTH * 16 - Game.WIDTH);
-		Camera.y = Camera.clamp(this.getY() - (Game.HEIGHT / 2), 0, World.HEIGHT * 16 - Game.HEIGHT);
+		cameraTick();
 
 	}
 
@@ -160,6 +159,11 @@ public class Player extends Entity {
 
 		// showReloadFeedback(g);
 
+	}
+
+	private void cameraTick() {
+		Camera.x = Camera.clamp(this.getX() - (Game.WIDTH / 2), 0, World.WIDTH * 16 - Game.WIDTH);
+		Camera.y = Camera.clamp(this.getY() - (Game.HEIGHT / 2), 0, World.HEIGHT * 16 - Game.HEIGHT);
 	}
 
 	private void movement() {

@@ -4,6 +4,8 @@ import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics;
 
+import com.jb.enums.GameState;
+
 public class Menu {
 
 	public String[] options = { "novo jogo", "carregar", "sair" };
@@ -11,8 +13,10 @@ public class Menu {
 	public int currentOption = 0;
 	public int maxOption = options.length - 1;
 
-	public boolean up;
-	public boolean down;
+	private boolean up;
+	private boolean down;
+	private boolean enter;
+	private boolean pause = false;
 
 	public void tick() {
 		if (up) {
@@ -30,6 +34,14 @@ public class Menu {
 				currentOption = 0;
 			}
 		}
+
+		if (enter) {
+			setEnter(false);
+			if (options[currentOption] == "novo jogo") {
+				Game.gameState = GameState.NORMAL;
+				setPause(false);
+			}
+		}
 	}
 
 	public void render(Graphics g) {
@@ -43,7 +55,8 @@ public class Menu {
 		// options
 		g.setColor(Color.white);
 		g.setFont(new Font("arial", Font.BOLD, 24));
-		g.drawString("novo jogo", (Game.WIDTH * Game.SCALE) / 2 - 125, (Game.HEIGHT * Game.SCALE) / 2 - 70);
+		g.drawString(!(pause) ? "novo jogo" : "continuar", (Game.WIDTH * Game.SCALE) / 2 - 125,
+				(Game.HEIGHT * Game.SCALE) / 2 - 70);
 		g.drawString("carregar", (Game.WIDTH * Game.SCALE) / 2 - 125, (Game.HEIGHT * Game.SCALE) / 2 - 30);
 		g.drawString("sair", (Game.WIDTH * Game.SCALE) / 2 - 125, (Game.HEIGHT * Game.SCALE) / 2 + 10);
 
@@ -79,5 +92,21 @@ public class Menu {
 
 	public void setDown(boolean down) {
 		this.down = down;
+	}
+
+	public boolean getEnter() {
+		return enter;
+	}
+
+	public void setEnter(boolean enter) {
+		this.enter = enter;
+	}
+
+	public boolean getPause() {
+		return pause;
+	}
+
+	public void setPause(boolean pause) {
+		this.pause = pause;
 	}
 }
