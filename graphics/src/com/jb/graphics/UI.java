@@ -60,4 +60,17 @@ public class UI {
 			Game.menu.render(g);
 		}
 	}
+
+	public void fadeInUI(Graphics g) {
+		if (Game.gameState == GameState.FADEIN) {
+			Game.fadeIn.render(g);
+		}
+	}
+
+	public void fadeOutUI(Graphics g) {
+		if (Game.gameState == GameState.FADEOUT) {
+			Game.fadeOut.render(g);
+		}
+	}
+
 }

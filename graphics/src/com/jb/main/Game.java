@@ -63,6 +63,8 @@ public class Game extends Canvas implements Runnable, KeyListener, MouseListener
 	public static UI ui;
 	public static GameState gameState = GameState.MENU;
 	public static Menu menu;
+	public static FadeIn fadeIn;
+	public static FadeOut fadeOut;
 
 	public Game() {
 		this.addKeyListener(this);
@@ -77,6 +79,8 @@ public class Game extends Canvas implements Runnable, KeyListener, MouseListener
 		enemies = new ArrayList<Enemy>();
 		bulletshoot = new ArrayList<Bulletshoot>();
 		menu = new Menu();
+		fadeIn = new FadeIn();
+		fadeOut = new FadeOut();
 		spritesheet = new Spritesheet("/spritesheet.png");
 		player = new Player(0, 0, 16, 16, spritesheet.getSprite(32, 0, 16, 16));
 		entities.add(player);
@@ -116,8 +120,8 @@ public class Game extends Canvas implements Runnable, KeyListener, MouseListener
 
 			entitiesTick();
 			bulletshootTick();
-
 			nextLevel();
+
 			return;
 		}
 
@@ -133,6 +137,17 @@ public class Game extends Canvas implements Runnable, KeyListener, MouseListener
 
 			menu.tick();
 			// restartAfterGameOver();
+		}
+
+		if (gameState == GameState.FADEIN) {
+			fadeIn.tick();
+		}
+
+		if (gameState == GameState.FADEOUT) {
+			fadeOut.tick();
+			if (fadeOut.getFadeEnd()) {
+				nextLevel();
+			}
 		}
 
 	}
@@ -171,6 +186,8 @@ public class Game extends Canvas implements Runnable, KeyListener, MouseListener
 		ui.renderWithoutScale(g);
 		ui.gameOverUI(g);
 		ui.menuUI(g);
+		ui.fadeInUI(g);
+		ui.fadeOutUI(g);
 		bs.show();
 	}
 
@@ -217,23 +234,41 @@ public class Game extends Canvas implements Runnable, KeyListener, MouseListener
 	}
 
 	private void reinitGame(String level) {
+
 		entities.clear();
 		enemies.clear();
+		bulletshoot.clear();
 		entities = new ArrayList<Entity>();
 		enemies = new ArrayList<Enemy>();
 		spritesheet = new Spritesheet("/spritesheet.png");
 		player = new Player(0, 0, 16, 16, spritesheet.getSprite(32, 0, 16, 16));
 		entities.add(player);
 		world = new World("/" + level);
+		player.cameraTick();
+
+		fadeIn = new FadeIn();
+		gameState = GameState.FADEIN;
+
 	}
 
 	private void nextLevel() {
 		if (enemies.size() == 0) {
-			currentLevel++;
-			if (currentLevel > maxLevel)
-				currentLevel = 1;
-			String newWorld = "level" + currentLevel + ".png";
-			reinitGame(newWorld);
+
+			if (!fadeOut.getFadeEnd()) {
+				gameState = GameState.FADEOUT;
+			} else {
+
+				fadeOut = new FadeOut();
+
+				currentLevel++;
+
+				if (currentLevel > maxLevel) {
+					currentLevel = 1;
+				}
+
+				String newWorld = "level" + currentLevel + ".png";
+				reinitGame(newWorld);
+			}
 		}
 	}
 

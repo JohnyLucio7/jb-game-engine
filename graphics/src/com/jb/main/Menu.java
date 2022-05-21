@@ -38,7 +38,7 @@ public class Menu {
 		if (enter) {
 			setEnter(false);
 			if (options[currentOption] == "novo jogo") {
-				Game.gameState = GameState.NORMAL;
+				Game.gameState = GameState.FADEIN;
 				setPause(false);
 			}
 		}
