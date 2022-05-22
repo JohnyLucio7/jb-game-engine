@@ -13,7 +13,7 @@ import com.jb.world.World;
 
 public class Player extends Entity {
 
-	/** player attributes */
+	/** player attributes */ 
 
 	private double life = 100;
 	private int maxLife = 100;
