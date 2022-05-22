@@ -7,6 +7,7 @@ import java.awt.Rectangle;
 import java.awt.image.BufferedImage;
 
 import com.jb.main.Game;
+import com.jb.main.Sound;
 import com.jb.world.Camera;
 import com.jb.enums.Direction;
 import com.jb.world.World;
@@ -108,8 +109,10 @@ public class Enemy extends Entity {
 
 			if (Game.rand.nextInt(100) < 10) {
 				Game.player.setLife(Game.player.getLife() - Game.rand.nextInt(3));
+				Sound.hurt.play();
 				Game.player.setIsDamaged(true);
 			}
+			//Sound.hurt.stop();
 		}
 
 		this.isCollidingWithBullet();
@@ -170,7 +173,6 @@ public class Enemy extends Entity {
 		// Game.enemies.remove(this); movido para animDead
 		Game.entities.remove(this);
 	}
-	
 
 	private void animDead() {
 		setIsDead(true);

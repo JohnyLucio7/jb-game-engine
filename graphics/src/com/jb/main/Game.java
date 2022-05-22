@@ -67,6 +67,8 @@ public class Game extends Canvas implements Runnable, KeyListener, MouseListener
 	public static FadeOut fadeOut;
 
 	public Game() {
+
+		Sound.musicBG.loop();
 		this.addKeyListener(this);
 		this.addMouseListener(this);
 		this.setFocusable(true); // estabelece este canvas no 1º plano
@@ -86,6 +88,7 @@ public class Game extends Canvas implements Runnable, KeyListener, MouseListener
 		entities.add(player);
 		world = new World("/level1.png");
 		ui = new UI();
+
 	}
 
 	/** Método que inicializar a execução da thread */
