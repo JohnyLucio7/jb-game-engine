@@ -16,7 +16,7 @@ public class Enemy extends Entity {
 
 	/** enemy attributes */
 
-	private int life = 1;
+	private int life = 10;
 	private int maxLife = 10;
 	private int speed = 1;
 	private Direction direction = Direction.RIGHT;
@@ -112,7 +112,7 @@ public class Enemy extends Entity {
 				Sound.hurt.play();
 				Game.player.setIsDamaged(true);
 			}
-			//Sound.hurt.stop();
+			// Sound.hurt.stop();
 		}
 
 		this.isCollidingWithBullet();
