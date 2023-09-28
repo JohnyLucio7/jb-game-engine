@@ -165,11 +165,13 @@ public class Player extends Entity {
 	private void movement() {
 		isMoved = false;
 
-		if (right && World.isFree(this.getX() + speed, this.getY())) {
+		if (right && !left && World.isFree(this.getX() + speed, this.getY())) {
 			isMoved = true;
 			direction = Direction.RIGHT;
 			setX(getX() + speed);
-		} else if (left && World.isFree(this.getX() - speed, this.getY())) {
+		}
+		
+		if (left && !right && World.isFree(this.getX() - speed, this.getY())) {
 			isMoved = true;
 			direction = Direction.LEFT;
 			setX(getX() - speed);
